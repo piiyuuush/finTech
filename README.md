@@ -1,4 +1,4 @@
-# FinPulse - Personal Finance & Expense Tracker
+# FinTrack - Personal Finance & Expense Tracker
 
 A world-class, glassmorphic personal finance management application inspired by modern fintech designs.
 
