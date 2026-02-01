@@ -58,4 +58,5 @@ export interface FinanceState {
   budget: FinancialBudget[];
   userName: string;
   currency: string;
+  language: 'en' | 'es' | 'fr' | 'hi';
 }

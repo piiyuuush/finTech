@@ -1,38 +1,56 @@
 
 import React, { useState } from 'react';
 import { useFinance } from '../context/FinanceContext';
-import { FinancialGoal } from '../types';
+import { FinancialGoal, FinancialBudget } from '../types';
 import { Plus, Target, Calendar, MoreVertical, Edit2, Trash2 } from 'lucide-react';
 import GoalModal from './GoalModal';
+import BudgetModal from './BudgetModal';
 
 const GoalsManager: React.FC = () => {
   const { state, dispatch } = useFinance();
-  const [showModal, setShowModal] = useState(false);
+  const [showGoalModal, setShowGoalModal] = useState(false);
   const [editingGoal, setEditingGoal] = useState<FinancialGoal | undefined>();
-  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [openGoalMenuId, setOpenGoalMenuId] = useState<string | null>(null);
 
-  const handleEdit = (goal: FinancialGoal) => {
+  const [showBudgetModal, setShowBudgetModal] = useState(false);
+  const [editingBudget, setEditingBudget] = useState<FinancialBudget | undefined>();
+  const [openBudgetMenuId, setOpenBudgetMenuId] = useState<string | null>(null);
+
+  const handleEditGoal = (goal: FinancialGoal) => {
     setEditingGoal(goal);
-    setShowModal(true);
-    setOpenMenuId(null);
+    setShowGoalModal(true);
+    setOpenGoalMenuId(null);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDeleteGoal = (id: string) => {
     if (confirm('Are you sure you want to delete this goal?')) {
       dispatch({ type: 'DELETE_GOAL', payload: id });
     }
-    setOpenMenuId(null);
+    setOpenGoalMenuId(null);
+  };
+
+  const handleEditBudget = (budget: FinancialBudget) => {
+    setEditingBudget(budget);
+    setShowBudgetModal(true);
+    setOpenBudgetMenuId(null);
+  };
+
+  const handleDeleteBudget = (id: string) => {
+    if (confirm('Are you sure you want to delete this budget?')) {
+      dispatch({ type: 'DELETE_BUDGET', payload: id });
+    }
+    setOpenBudgetMenuId(null);
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
+    <div className="space-y-8 animate-in fade-in duration-500 pb-20">
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-black text-slate-900">Your Savings Goals</h2>
           <p className="text-slate-400 text-sm font-medium mt-1">Track and manage your future dreams.</p>
         </div>
         <button 
-          onClick={() => { setEditingGoal(undefined); setShowModal(true); }}
+          onClick={() => { setEditingGoal(undefined); setShowGoalModal(true); }}
           className="bg-emerald-600 text-white px-6 py-3 rounded-2xl text-sm font-bold flex items-center gap-2 hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-100 active:scale-95"
         >
           <Plus size={18} /> New Goal
@@ -43,7 +61,7 @@ const GoalsManager: React.FC = () => {
         {state.goals.map(goal => (
           <div 
             key={goal.id} 
-            onClick={() => handleEdit(goal)}
+            onClick={() => handleEditGoal(goal)}
             className="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer group relative overflow-hidden"
           >
             <div className="flex justify-between items-start mb-6">
@@ -52,21 +70,21 @@ const GoalsManager: React.FC = () => {
               </div>
               <div className="relative">
                 <button 
-                  onClick={(e) => { e.stopPropagation(); setOpenMenuId(openMenuId === goal.id ? null : goal.id); }}
+                  onClick={(e) => { e.stopPropagation(); setOpenGoalMenuId(openGoalMenuId === goal.id ? null : goal.id); }}
                   className="p-2 text-slate-300 hover:text-slate-600 hover:bg-slate-50 rounded-full transition-colors"
                 >
                   <MoreVertical size={20} />
                 </button>
-                {openMenuId === goal.id && (
+                {openGoalMenuId === goal.id && (
                   <div className="absolute right-0 top-full mt-2 w-32 bg-white shadow-2xl rounded-2xl py-2 z-20 border border-slate-50 animate-in fade-in zoom-in duration-150">
                     <button 
-                      onClick={(e) => { e.stopPropagation(); handleEdit(goal); }}
+                      onClick={(e) => { e.stopPropagation(); handleEditGoal(goal); }}
                       className="w-full px-4 py-2 text-left text-xs font-bold flex items-center gap-2 hover:bg-slate-50"
                     >
                       <Edit2 size={12} className="text-blue-600" /> Edit
                     </button>
                     <button 
-                      onClick={(e) => { e.stopPropagation(); handleDelete(goal.id); }}
+                      onClick={(e) => { e.stopPropagation(); handleDeleteGoal(goal.id); }}
                       className="w-full px-4 py-2 text-left text-xs font-bold flex items-center gap-2 hover:bg-slate-50 text-rose-600"
                     >
                       <Trash2 size={12} /> Delete
@@ -108,55 +126,95 @@ const GoalsManager: React.FC = () => {
                 {Math.round((goal.currentAmount / goal.targetAmount) * 100)}% Completed
               </p>
             </div>
-            
-            {/* Background pattern */}
-            <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
-              <Target size={120} />
-            </div>
           </div>
         ))}
-
-        {state.goals.length === 0 && (
-          <div className="col-span-full py-20 bg-white rounded-[40px] border-2 border-dashed border-slate-100 flex flex-col items-center justify-center text-slate-400">
-            <Target size={48} className="mb-4 opacity-20" />
-            <p className="font-black text-lg">No goals set yet.</p>
-            <p className="text-sm font-medium mt-1">Every big achievement starts with a simple goal.</p>
-          </div>
-        )}
       </div>
 
-      {showModal && <GoalModal editingGoal={editingGoal} onClose={() => { setShowModal(false); setEditingGoal(undefined); }} />}
       {/* Budget Limits */}
-      <section>
-         <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xl font-black text-slate-900">Budget Limits</h3>
+      <section className="space-y-6">
+         <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-2xl font-black text-slate-900">Budget Limits</h3>
+              <p className="text-slate-400 text-sm font-medium mt-1">Control your monthly spending by category.</p>
+            </div>
             <button 
-              // onClick={() => { setEditingGoal(undefined); setShowModal(true); }}
-              className="bg-emerald-600 text-white px-6 py-3 rounded-2xl text-sm font-bold flex items-center gap-2 hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-100 active:scale-95"
+              onClick={() => { setEditingBudget(undefined); setShowBudgetModal(true); }}
+              className="bg-slate-900 text-white px-6 py-3 rounded-2xl text-sm font-bold flex items-center gap-2 hover:bg-slate-800 transition-all shadow-lg shadow-slate-100 active:scale-95"
               >
               <Plus size={18} /> New Budget
             </button>
          </div>
-         <div className="space-y-3">
+         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {state.budget.map(budget => (
-            <div className="bg-white p-5 rounded-[28px] border border-slate-100 flex items-center justify-between group cursor-pointer hover:border-blue-100 transition-colors"
-            key={budget.id} 
+            <div 
+              key={budget.id}
+              onClick={() => handleEditBudget(budget)}
+              className="bg-white p-6 rounded-[32px] border border-slate-100 flex items-center justify-between group cursor-pointer hover:border-indigo-100 hover:shadow-xl transition-all relative overflow-hidden"
             >
-               <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center text-xl">{budget.icon}</div>
+               <div className="flex items-center gap-5 relative z-10">
+                  <div className="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center text-2xl shadow-inner group-hover:scale-110 transition-transform">
+                    {budget.icon || '💰'}
+                  </div>
                   <div>
-                     <p className="font-black text-slate-800 text-sm">{budget.category}</p>
-                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Spent vs Limit</p>
+                     <p className="font-black text-slate-800 text-sm uppercase tracking-tight">{budget.category}</p>
+                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Monthly Allowance</p>
                   </div>
                </div>
-               <div className="text-right">
-                  <p className="font-black text-slate-800 text-sm">₹{budget.currentAmount}/₹{budget.limit}</p>
-                  <p className="text-[10px] font-bold text-emerald-500 uppercase">{Math.round((budget.currentAmount/budget.limit) * 100)}% used</p>
+               <div className="flex items-center gap-4 relative z-10">
+                  <div className="text-right">
+                    <p className="font-black text-slate-800 text-sm">{state.currency}{budget.currentAmount.toLocaleString()} / {state.currency}{budget.limit.toLocaleString()}</p>
+                    <p className={`text-[10px] font-black uppercase mt-1 ${budget.currentAmount > budget.limit ? 'text-rose-500' : 'text-indigo-500'}`}>
+                      {Math.round((budget.currentAmount/budget.limit) * 100)}% used
+                    </p>
+                  </div>
+                  <div className="relative">
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); setOpenBudgetMenuId(openBudgetMenuId === budget.id ? null : budget.id); }}
+                      className="p-2 text-slate-300 hover:text-slate-600 hover:bg-slate-50 rounded-full transition-colors"
+                    >
+                      <MoreVertical size={20} />
+                    </button>
+                    {openBudgetMenuId === budget.id && (
+                      <div className="absolute right-0 top-full mt-2 w-32 bg-white shadow-2xl rounded-2xl py-2 z-20 border border-slate-50 animate-in fade-in zoom-in duration-150">
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); handleEditBudget(budget); }}
+                          className="w-full px-4 py-2 text-left text-xs font-bold flex items-center gap-2 hover:bg-slate-50"
+                        >
+                          <Edit2 size={12} className="text-blue-600" /> Edit
+                        </button>
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); handleDeleteBudget(budget.id); }}
+                          className="w-full px-4 py-2 text-left text-xs font-bold flex items-center gap-2 hover:bg-slate-50 text-rose-600"
+                        >
+                          <Trash2 size={12} /> Delete
+                        </button>
+                      </div>
+                    )}
+                  </div>
+               </div>
+               
+               {/* Progress bar background */}
+               <div className="absolute bottom-0 left-0 h-1 bg-slate-100 w-full overflow-hidden">
+                 <div 
+                   className={`h-full transition-all duration-1000 ${budget.currentAmount > budget.limit ? 'bg-rose-500' : 'bg-indigo-500'}`}
+                   style={{ width: `${Math.min(100, (budget.currentAmount/budget.limit) * 100)}%` }}
+                 />
                </div>
             </div>
           ))}
          </div>
+
+         {state.budget.length === 0 && (
+           <div className="py-20 bg-white rounded-[40px] border-2 border-dashed border-slate-100 flex flex-col items-center justify-center text-slate-400">
+             <Target size={48} className="mb-4 opacity-10" />
+             <p className="font-black">No budgets established.</p>
+             <p className="text-xs font-medium mt-1">Control your categories and save more.</p>
+           </div>
+         )}
       </section>
+
+      {showGoalModal && <GoalModal editingGoal={editingGoal} onClose={() => { setShowGoalModal(false); setEditingGoal(undefined); }} />}
+      {showBudgetModal && <BudgetModal editingBudget={editingBudget} onClose={() => { setShowBudgetModal(false); setEditingBudget(undefined); }} />}
     </div>
   );
 };

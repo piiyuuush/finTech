@@ -1,5 +1,5 @@
 {
-  "name": "finpulse---personal-finance-&-expense-tracker",
+  "name": "fintrack---personal-finance-&-expense-tracker",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -13,7 +13,8 @@
     "lucide-react": "^0.563.0",
     "@google/genai": "^1.38.0",
     "react-dom": "^19.2.4",
-    "recharts": "^3.7.0"
+    "recharts": "^3.7.0",
+    "fs": "^0.0.1-security"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

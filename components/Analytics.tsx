@@ -12,11 +12,12 @@ const Analytics: React.FC = () => {
   const [loadingAi, setLoadingAi] = useState(false);
 
   // Weekly spending vs budget mockup
-  const weeklyData = [];
+  const weeklyData: any[] = [];
 
   const generateInsights = async () => {
     setLoadingAi(true);
-    const insights = await getFinancialObservations(state.transactions, state.debts, state.goals);
+    // Updated: getFinancialObservations no longer takes debts as it is not in FinanceState
+    const insights = await getFinancialObservations(state.transactions, state.goals);
     setObservations(insights);
     setLoadingAi(false);
   };
@@ -87,16 +88,25 @@ const Analytics: React.FC = () => {
                <h3 className="text-xl font-black">Insights</h3>
             </div>
             
-            <p className="text-slate-300 leading-relaxed mb-8">
-               Your morning routine is getting expensive. <span className="text-blue-400 font-bold">You've spent 15% more on Coffee</span> this month compared to your last 3-month average.
-            </p>
+            <div className="text-slate-300 leading-relaxed mb-8 space-y-4">
+               {observations.length > 0 ? (
+                  observations.map((obs, idx) => (
+                    <p key={idx} className="flex items-start gap-2">
+                      <Sparkles size={14} className="mt-1 text-blue-400 shrink-0" />
+                      <span>{obs}</span>
+                    </p>
+                  ))
+               ) : (
+                  <p>Analyzing your spending patterns to provide personalized financial tips...</p>
+               )}
+            </div>
 
             <button 
               onClick={generateInsights}
               disabled={loadingAi}
               className="bg-white/10 hover:bg-white/20 px-6 py-3 rounded-2xl font-bold text-sm transition-all flex items-center gap-2 group border border-white/5"
             >
-               {loadingAi ? 'Analyzing...' : 'Review Habits'}
+               {loadingAi ? 'Analyzing...' : 'Refresh Insights'}
                <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
             </button>
          </div>

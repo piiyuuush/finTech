@@ -42,34 +42,35 @@ const TransactionManager: React.FC = () => {
   const filteredTransactions = getFilteredTransactions();
 
   const tabconfig = {
-  debt: {
-    showSummary: true,
-    leftLabel: 'I Lent (Owed to me)',
-    rightLabel: 'I Borrowed (I owe)',
-    leftValue: totalLent,
-    rightValue: totalBorrowed,
-    leftColor: 'blue',
-    rightColor: 'amber',
-    LeftIcon: UserPlus,
-    RightIcon: UserMinus,
-  },
-  self:{
-    showSummary: false
-  },
-  spending: {
-    showSummary: true,
-    leftLabel: 'Total Expense',
-    rightLabel: 'Total Income',
-    leftValue: totalExpense,
-    rightValue: totalIncome,
-    leftColor: 'red',
-    rightColor: 'green',
-    LeftIcon: UserMinus,
-    RightIcon: UserPlus,
-  },
-};
+    debt: {
+      showSummary: true,
+      leftLabel: 'I Lent (Owed to me)',
+      rightLabel: 'I Borrowed (I owe)',
+      leftValue: totalLent,
+      rightValue: totalBorrowed,
+      leftColor: 'blue',
+      rightColor: 'amber',
+      LeftIcon: UserPlus,
+      RightIcon: UserMinus,
+    },
+    self: {
+      showSummary: false
+    },
+    spending: {
+      showSummary: true,
+      leftLabel: 'Total Expense',
+      rightLabel: 'Total Income',
+      leftValue: totalExpense,
+      rightValue: totalIncome,
+      leftColor: 'red',
+      rightColor: 'green',
+      LeftIcon: UserMinus,
+      RightIcon: UserPlus,
+    },
+  };
 
-const config = tabconfig[activeSubTab];
+  // Fixed: Cast config to any to resolve property access errors on the union type
+  const config: any = tabconfig[activeSubTab];
 
   const handleEdit = (t: Transaction) => {
     setEditingTransaction(t);
@@ -141,52 +142,44 @@ const config = tabconfig[activeSubTab];
         </div>
       </div>
       <div className="space-y-6">
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-    { config.showSummary &&
-    (<><div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-      <div className="flex items-center gap-4">
-        <div
-          className={`p-3 bg-${config.leftColor}-50 text-${config.leftColor}-600 rounded-xl`}
-        >
-          <config.LeftIcon size={24} />
-        </div>
-        <div>
-          <p className="text-sm text-slate-500 font-medium">
-            {config.leftLabel}
-          </p>
-          <h2
-            className={`text-2xl font-bold text-${config.leftColor}-600`}
-          >
-            {state.currency}
-            {config.leftValue.toLocaleString()}
-          </h2>
-        </div>
-      </div>
-    </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          { config.showSummary && (
+            <>
+              <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <div className="flex items-center gap-4">
+                  <div className={`p-3 bg-${config.leftColor}-50 text-${config.leftColor}-600 rounded-xl`}>
+                    <config.LeftIcon size={24} />
+                  </div>
+                  <div>
+                    <p className="text-sm text-slate-500 font-medium">
+                      {config.leftLabel}
+                    </p>
+                    <h2 className={`text-2xl font-bold text-${config.leftColor}-600`}>
+                      {state.currency}{config.leftValue.toLocaleString()}
+                    </h2>
+                  </div>
+                </div>
+              </div>
 
-    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-      <div className="flex items-center gap-4">
-        <div
-          className={`p-3 bg-${config.rightColor}-50 text-${config.rightColor}-600 rounded-xl`}
-        >
-          <config.RightIcon size={24} />
-        </div>
-        <div>
-          <p className="text-sm text-slate-500 font-medium">
-            {config.rightLabel}
-          </p>
-          <h2
-            className={`text-2xl font-bold text-${config.rightColor}-600`}
-          >
-            {state.currency}
-            {config.rightValue.toLocaleString()}
-          </h2>
+              <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <div className="flex items-center gap-4">
+                  <div className={`p-3 bg-${config.rightColor}-50 text-${config.rightColor}-600 rounded-xl`}>
+                    <config.RightIcon size={24} />
+                  </div>
+                  <div>
+                    <p className="text-sm text-slate-500 font-medium">
+                      {config.rightLabel}
+                    </p>
+                    <h2 className={`text-2xl font-bold text-${config.rightColor}-600`}>
+                      {state.currency}{config.rightValue.toLocaleString()}
+                    </h2>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
-    </div></>)
-    }
-  </div>
-</div>
 
       {/* Transactions List - Mobile Optimized / Compact */}
       <div className="space-y-3">

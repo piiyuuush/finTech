@@ -1,11 +1,10 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
-import { Transaction, Debt, FinancialGoal } from '../types';
+import { Transaction, FinancialGoal } from '../types';
 
 // Finance observations helper
 export const getFinancialObservations = async (
   transactions: Transaction[],
-  debts: Debt[],
   goals: FinancialGoal[]
 ) => {
   // Always initialize a fresh GoogleGenAI instance before the call to ensure up-to-date config/API key
@@ -14,11 +13,10 @@ export const getFinancialObservations = async (
   const prompt = `
     Act as an expert personal finance advisor. Analyze the following financial data and provide 3-4 concise, actionable observations or tips.
     
-    Transactions: ${JSON.stringify(transactions.slice(-20))}
-    Active Debts: ${JSON.stringify(debts.filter(d => d.status === 'OPEN'))}
+    Recent Transactions: ${JSON.stringify(transactions.slice(-20))}
     Goals: ${JSON.stringify(goals)}
     
-    Focus on spending patterns, debt management, and goal progress.
+    Focus on spending patterns and goal progress.
     Return the response as a valid JSON array of strings.
   `;
 
