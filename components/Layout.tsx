@@ -49,6 +49,19 @@ const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTab }) =>
             </button>
           ))}
         </div>
+        <div className="mt-auto p-6">
+          <button 
+            onClick={() => setActiveTab('profile')}
+            className={`flex items-center gap-4 px-5 py-4 rounded-2xl w-full transition-all duration-200 ${
+              activeTab === 'profile' 
+                ? 'bg-indigo-50 text-indigo-600 font-bold shadow-sm' 
+                : 'text-slate-400 hover:bg-slate-50 hover:text-slate-600'
+            }`}
+          >
+            <Settings size={22} />
+            <span className="text-sm tracking-wide">{t.settings}</span>
+          </button>
+        </div>
       </nav>
 
       {/* Main Content */}
@@ -92,7 +105,7 @@ const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTab }) =>
 
         {/* Bottom Nav - Mobile */}
         <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 flex justify-around items-center p-4 z-40 pb-6 rounded-t-[32px] shadow-[0_-10px_25px_-5px_rgba(0,0,0,0.05)]">
-          {navItems.concat([{id: 'profile', label: t.profile, icon: <Settings size={20} />}]).map((item) => (
+          {navItems.map((item) => (
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
