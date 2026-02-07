@@ -59,4 +59,5 @@ export interface FinanceState {
   userName: string;
   currency: string;
   language: 'en' | 'es' | 'fr' | 'hi';
+  isDarkMode: boolean;
 }

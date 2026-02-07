@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { FinanceProvider } from './context/FinanceContext';
+import { FinanceProvider, useFinance } from './context/FinanceContext';
 import Layout from './components/Layout';
 import Dashboard from './components/Dashboard';
 import TransactionManager from './components/TransactionManager';
@@ -8,7 +8,8 @@ import Analytics from './components/Analytics';
 import Profile from './components/Profile';
 import GoalsManager from './components/GoalsManager';
 
-const App: React.FC = () => {
+const AppContent: React.FC = () => {
+  const { state } = useFinance();
   const [activeTab, setActiveTab] = useState('dashboard');
 
   const renderContent = () => {
@@ -23,10 +24,18 @@ const App: React.FC = () => {
   };
 
   return (
-    <FinanceProvider>
+    <div className={state.isDarkMode ? 'dark' : ''}>
       <Layout activeTab={activeTab} setActiveTab={setActiveTab}>
         {renderContent()}
       </Layout>
+    </div>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <FinanceProvider>
+      <AppContent />
     </FinanceProvider>
   );
 };

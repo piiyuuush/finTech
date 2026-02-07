@@ -17,6 +17,7 @@ type FinanceAction =
   | { type: 'UPDATE_BUDGET'; payload: FinancialBudget }
   | { type: 'DELETE_BUDGET'; payload: string }
   | { type: 'UPDATE_SETTINGS'; payload: Partial<Pick<FinanceState, 'userName' | 'currency' | 'language'>> }
+  | { type: 'TOGGLE_THEME' }
   | { type: 'LOAD_DATA'; payload: FinanceState };
 
 const initialState: FinanceState = {
@@ -25,17 +26,17 @@ const initialState: FinanceState = {
     { id: '2', name: 'Business Card', type: 'Credit Card', balance: 8400, cardNumber: '**** **** **** 1288', color: 'bg-slate-800' }
   ],
   transactions: [
-  {
-    id: 'txn-001',
-    accountId: '1',
-    type: TransactionType.INCOME,
-    subtype: TransactionSubtype.RECURRING,
-    category: 'Salary',
-    amount: 65000,
-    date: '2026-01-01',
-    description: 'Monthly salary credit'
-  }
-],
+    {
+      id: 'txn-001',
+      accountId: '1',
+      type: TransactionType.INCOME,
+      subtype: TransactionSubtype.RECURRING,
+      category: 'Salary',
+      amount: 65000,
+      date: '2026-01-01',
+      description: 'Monthly salary credit'
+    }
+  ],
   goals: [
     { id: 'g1', name: 'New Tesla', targetAmount: 180000, currentAmount: 45000, deadline: '2025-12-01', icon: '🚗' },
     { id: 'g2', name: 'Home Downpay', targetAmount: 500000, currentAmount: 120000, deadline: '2026-06-01', icon: '🏠' }
@@ -46,7 +47,8 @@ const initialState: FinanceState = {
   ],
   currency: '₹',
   userName: 'Piyush Bhandari',
-  language: 'en'
+  language: 'en',
+  isDarkMode: false
 };
 
 const financeReducer = (state: FinanceState, action: FinanceAction): FinanceState => {
@@ -100,6 +102,8 @@ const financeReducer = (state: FinanceState, action: FinanceAction): FinanceStat
       return { ...state, budget: state.budget.filter(b => b.id !== action.payload) };
     case 'UPDATE_SETTINGS':
       return { ...state, ...action.payload };
+    case 'TOGGLE_THEME':
+      return { ...state, isDarkMode: !state.isDarkMode };
     case 'LOAD_DATA':
       return { ...action.payload };
     default:
