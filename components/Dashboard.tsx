@@ -152,7 +152,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                 </div>
                 <div className={`w-full h-2 rounded-full mt-3 overflow-hidden border transition-colors ${state.isDarkMode ? 'bg-white/5 border-white/5' : 'bg-slate-50 border-slate-100/50'}`}>
                    <div 
-                    className={`h-full rounded-full transition-all duration-1000 shadow-sm ${state.isDarkMode ? 'bg-[#10b981]' : 'bg-amber-500'}`} 
+                    className={`h-full rounded-full transition-all duration-1000 shadow-sm ${state.isDarkMode ? 'bg-[#a855f7]': 'bg-[#10b981]'}`}
                     style={{ width: `${Math.min(100, (goal.currentAmount / goal.targetAmount) * 100)}%` }}
                    />
                 </div>

@@ -49,13 +49,13 @@ const GoalsManager: React.FC = () => {
           <h2 className={`text-2xl font-black transition-colors ${state.isDarkMode ? 'text-white' : 'text-slate-900'}`}>Your Savings Goals</h2>
           <p className={`text-sm font-medium mt-1 transition-colors ${state.isDarkMode ? 'text-[#94a3b8]' : 'text-slate-400'}`}>Track and manage your future dreams.</p>
         </div>
-        <button 
+       <button 
           onClick={() => { setEditingGoal(undefined); setShowGoalModal(true); }}
           className={`px-6 py-3 rounded-2xl text-sm font-bold flex items-center gap-2 transition-all active:scale-95 ${
             state.isDarkMode 
-              ? 'bg-[#10b981] text-white shadow-lg shadow-[#10b981]/20 hover:bg-[#10b981]/90' 
-              : 'bg-emerald-600 text-white shadow-lg shadow-emerald-100 hover:bg-emerald-700'
-          }`}
+              ? 'bg-[#a855f7] text-white shadow-lg shadow-[#a855f7]/20 hover:bg-[#a855f7]/90' 
+              : 'bg-slate-900 text-white shadow-lg shadow-100 hover:bg-slate-800'
+            }`}
         >
           <Plus size={18} /> New Goal
         </button>

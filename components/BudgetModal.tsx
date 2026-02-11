@@ -114,7 +114,11 @@ const BudgetModal: React.FC<Props> = ({ onClose, editingBudget }) => {
             </div>
             <button 
               type="submit" 
-              className={`w-full py-5 rounded-[24px] font-bold text-lg transition-all active:scale-[0.98] ${state.isDarkMode ? 'bg-white text-[#1e1b39] shadow-xl hover:bg-slate-100' : 'bg-slate-900 text-white shadow-xl shadow-slate-100 hover:bg-slate-800'}`}
+              className={`w-full py-5 rounded-[24px] font-bold text-lg transition-all active:scale-[0.98] ${
+                state.isDarkMode 
+                ? 'bg-[#a855f7] text-white shadow-lg shadow-[#a855f7]/20 hover:bg-[#a855f7]/90' 
+                : 'bg-slate-900 text-white shadow-lg shadow-100 hover:bg-slate-800'
+              }`}
             >
               {editingBudget ? 'Update Budget' : 'Set Budget'}
             </button>

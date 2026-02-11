@@ -110,7 +110,11 @@ const GoalModal: React.FC<Props> = ({ onClose, editingGoal }) => {
             </div>
             <button 
               type="submit" 
-              className={`w-full py-5 rounded-[24px] font-bold text-lg transition-all active:scale-[0.98] ${state.isDarkMode ? 'bg-[#10b981] text-white shadow-xl shadow-[#10b981]/20 hover:bg-[#10b981]/90' : 'bg-emerald-600 text-white shadow-xl shadow-emerald-100 hover:bg-emerald-700'}`}
+              className={`w-full py-5 rounded-[24px] font-bold text-lg transition-all active:scale-[0.98] ${
+                state.isDarkMode 
+                ? 'bg-[#a855f7] text-white shadow-lg shadow-[#a855f7]/20 hover:bg-[#a855f7]/90' 
+                : 'bg-slate-900 text-white shadow-lg shadow-100 hover:bg-slate-800'
+              }`}
             >
               {editingGoal ? 'Update Goal' : 'Create Goal'}
             </button>
