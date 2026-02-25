@@ -7,10 +7,21 @@ import TransactionManager from './components/TransactionManager';
 import Analytics from './components/Analytics';
 import Profile from './components/Profile';
 import GoalsManager from './components/GoalsManager';
+import LandingPage from './components/LandingPage';
+import AuthPage from './components/AuthPage';
 
 const AppContent: React.FC = () => {
   const { state } = useFinance();
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [authView, setAuthView] = useState<'landing' | 'auth'>('landing');
+
+  // If not authenticated, show landing or auth pages
+  if (!state.isAuthenticated) {
+    if (authView === 'landing') {
+      return <LandingPage onJoin={() => setAuthView('auth')} />;
+    }
+    return <AuthPage onBack={() => setAuthView('landing')} />;
+  }
 
   const renderContent = () => {
     switch (activeTab) {

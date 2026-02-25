@@ -1,8 +1,12 @@
 
 import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
 import { FinanceState, Account, Transaction, FinancialGoal, FinancialBudget, TransactionType, TransactionSubtype } from '../types';
+import { auth, db } from '../services/firebase';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { doc, onSnapshot, setDoc } from 'firebase/firestore';
 
 type FinanceAction =
+  | { type: 'SET_USER'; payload: { uid: string; name: string; email: string } | null }
   | { type: 'ADD_TRANSACTION'; payload: Transaction }
   | { type: 'UPDATE_TRANSACTION'; payload: Transaction }
   | { type: 'DELETE_TRANSACTION'; payload: string }
@@ -18,41 +22,31 @@ type FinanceAction =
   | { type: 'DELETE_BUDGET'; payload: string }
   | { type: 'UPDATE_SETTINGS'; payload: Partial<Pick<FinanceState, 'userName' | 'currency' | 'language'>> }
   | { type: 'TOGGLE_THEME' }
-  | { type: 'LOAD_DATA'; payload: FinanceState };
+  | { type: 'SYNC_FROM_CLOUD'; payload: Partial<FinanceState> }
+  | { type: 'LOGOUT' };
 
 const initialState: FinanceState = {
-  accounts: [
-    { id: '1', name: 'Personal Account', type: 'Bank', balance: 145200, cardNumber: '**** **** **** 9010', color: 'bg-indigo-600' },
-    { id: '2', name: 'Business Card', type: 'Credit Card', balance: 8400, cardNumber: '**** **** **** 1288', color: 'bg-slate-800' }
-  ],
-  transactions: [
-    {
-      id: 'txn-001',
-      accountId: '1',
-      type: TransactionType.INCOME,
-      subtype: TransactionSubtype.RECURRING,
-      category: 'Salary',
-      amount: 65000,
-      date: '2026-01-01',
-      description: 'Monthly salary credit'
-    }
-  ],
-  goals: [
-    { id: 'g1', name: 'New Tesla', targetAmount: 180000, currentAmount: 45000, deadline: '2025-12-01', icon: '🚗' },
-    { id: 'g2', name: 'Home Downpay', targetAmount: 500000, currentAmount: 120000, deadline: '2026-06-01', icon: '🏠' }
-  ],
-  budget: [
-    { id: 'b1', category: 'Grocery', limit: 12000, currentAmount: 5000, icon: '🛒' },
-    { id: 'b2', category: 'Entertainment', limit: 5000, currentAmount: 2500, icon: '🎬' }
-  ],
+  accounts: [],
+  transactions: [],
+  goals: [],
+  budget: [],
   currency: '₹',
-  userName: 'Piyush Bhandari',
+  userName: '',
+  userEmail: '',
+  userId: null,
+  isAuthenticated: false,
   language: 'en',
   isDarkMode: false
 };
 
 const financeReducer = (state: FinanceState, action: FinanceAction): FinanceState => {
   switch (action.type) {
+    case 'SET_USER':
+      return action.payload 
+        ? { ...state, userId: action.payload.uid, userName: action.payload.name, userEmail: action.payload.email, isAuthenticated: true }
+        : { ...initialState };
+    case 'SYNC_FROM_CLOUD':
+      return { ...state, ...action.payload };
     case 'ADD_TRANSACTION':
       return { ...state, transactions: [action.payload, ...state.transactions] };
     case 'UPDATE_TRANSACTION':
@@ -104,8 +98,8 @@ const financeReducer = (state: FinanceState, action: FinanceAction): FinanceStat
       return { ...state, ...action.payload };
     case 'TOGGLE_THEME':
       return { ...state, isDarkMode: !state.isDarkMode };
-    case 'LOAD_DATA':
-      return { ...action.payload };
+    case 'LOGOUT':
+      return initialState;
     default:
       return state;
   }
@@ -119,21 +113,46 @@ const FinanceContext = createContext<{
 export const FinanceProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(financeReducer, initialState);
 
+  // Auth Listener
   useEffect(() => {
-    const saved = localStorage.getItem('finpulse_data_v2');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        dispatch({ type: 'LOAD_DATA', payload: parsed });
-      } catch(e) {
-        console.error("Failed to parse data", e);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        dispatch({ 
+          type: 'SET_USER', 
+          payload: { uid: user.uid, name: user.displayName || 'User', email: user.email || '' } 
+        });
+      } else {
+        dispatch({ type: 'SET_USER', payload: null });
       }
-    }
+    });
+    return () => unsubscribe();
   }, []);
 
+  // Firestore Sync - Pull
   useEffect(() => {
-    localStorage.setItem('finpulse_data_v2', JSON.stringify(state));
-  }, [state]);
+    if (!state.userId) return;
+    const docRef = doc(db, 'users', state.userId);
+    const unsubscribe = onSnapshot(docRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        dispatch({ type: 'SYNC_FROM_CLOUD', payload: data as FinanceState });
+      }
+    });
+    return () => unsubscribe();
+  }, [state.userId]);
+
+  // Firestore Sync - Push (Throttle locally for performance in real app)
+  useEffect(() => {
+    if (!state.userId) return;
+    const updateCloud = async () => {
+      const docRef = doc(db, 'users', state.userId!);
+      // We only save functional data, not auth status or userId (they come from auth)
+      const { isAuthenticated, userId, ...cloudData } = state;
+      await setDoc(docRef, cloudData, { merge: true });
+    };
+    const timer = setTimeout(updateCloud, 2000); // Debounce sync
+    return () => clearTimeout(timer);
+  }, [state.accounts, state.transactions, state.goals, state.budget, state.userName, state.currency, state.language, state.isDarkMode]);
 
   return (
     <FinanceContext.Provider value={{ state, dispatch }}>

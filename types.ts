@@ -57,6 +57,9 @@ export interface FinanceState {
   goals: FinancialGoal[];
   budget: FinancialBudget[];
   userName: string;
+  userEmail: string;
+  userId: string | null;
+  isAuthenticated: boolean;
   currency: string;
   language: 'en' | 'es' | 'fr' | 'hi';
   isDarkMode: boolean;

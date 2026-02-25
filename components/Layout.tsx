@@ -27,7 +27,7 @@ const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTab }) =>
       {/* Sidebar - Desktop */}
       <nav className={`hidden md:flex w-72 border-r flex-col sticky top-0 h-screen transition-all duration-500 ${state.isDarkMode ? 'bg-[#0d0b21]/80 backdrop-blur-xl border-white/5 shadow-none' : 'bg-white border-slate-100 shadow-sm'}`}>
         <div className="flex items-center gap-3 p-8">
-          <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold shadow-lg ${state.isDarkMode ? 'bg-[#a855f7] shadow-[#a855f7]/20' : 'bg-indigo-600 shadow-indigo-100'}`}>F</div>
+          <div className={`w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-bold shadow-lg ${state.isDarkMode ? 'bg-[#a855f7]' : ''}`}>F</div>
           <span onClick={() => setActiveTab('dashboard')} className={`text-xl font-black tracking-tight cursor-pointer transition-colors ${state.isDarkMode ? 'text-white' : 'text-slate-800'}`}>FinTrack</span>
         </div>
         
@@ -38,7 +38,7 @@ const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTab }) =>
               onClick={() => setActiveTab(item.id)}
               className={`flex items-center gap-4 px-5 py-4 rounded-2xl transition-all duration-200 ${
                 activeTab === item.id 
-                  ? `${state.isDarkMode ? 'bg-[#a855f7] text-white shadow-[#a855f7]/20' : 'bg-indigo-600 text-white shadow-indigo-100'} font-bold translate-x-1` 
+                  ? `${state.isDarkMode ? 'bg-[#a855f7] text-white' : 'bg-indigo-600 text-white'} font-bold translate-x-1 shadow-lg` 
                   : `${state.isDarkMode ? 'text-[#94a3b8] hover:bg-white/5 hover:text-white' : 'text-slate-400 hover:bg-slate-50 hover:text-slate-600'}`
               }`}
             >
@@ -72,21 +72,17 @@ const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTab }) =>
               {getHeaderTitle()}
             </h1>
           </div>
-          <div className="flex items-center">
+          <div className="flex items-center justify-center">
             <button 
               onClick={() => setActiveTab('profile')}
-              className={`group relative flex items-center rounded-full border-2 transition-all duration-500 p-1 sm:pr-4 sm:gap-3 ${
+              className={`group relative flex items-center justify-center rounded-full transition-all duration-500 w-10 h-10 ${
                 activeTab === 'profile' 
-                  ? (state.isDarkMode ? 'border-[#a855f7] bg-[#a855f7]/10 shadow-lg shadow-[#a855f7]/5' : 'border-indigo-600 bg-indigo-50/50 shadow-lg shadow-indigo-50')
-                  : (state.isDarkMode ? 'border-transparent bg-white/5 hover:bg-white/10' : 'border-transparent bg-slate-50 hover:bg-slate-100')
+                  ? (state.isDarkMode ? 'ring-2 ring-[#a855f7] bg-[#a855f7]/10' : 'ring-2 ring-indigo-600 bg-indigo-50')
+                  : (state.isDarkMode ? 'bg-white/5 hover:bg-white/10' : 'bg-slate-50 hover:bg-slate-100')
               }`}
             >
-                <div className={`w-10 h-10 rounded-full border-2 border-white/10 overflow-hidden shadow-sm flex items-center justify-center text-white ${state.isDarkMode ? 'bg-[#a855f7]' : 'bg-indigo-500'}`}>
-                    <User size={20} />
-                </div>
-                <div className="hidden sm:block text-left">
-                    <p className={`text-xs font-black leading-none transition-colors ${state.isDarkMode ? 'text-white' : 'text-slate-800'}`}>{state.userName.split(' ')[0]}</p>
-                    <p className={`text-[10px] font-bold mt-0.5 transition-colors ${state.isDarkMode ? 'text-[#94a3b8]' : 'text-slate-400'}`}>Pro Account</p>
+                <div className={`w-8 h-8 rounded-full overflow-hidden shadow-sm flex items-center justify-center text-white ${state.isDarkMode ? 'bg-[#a855f7]' : 'bg-indigo-500'}`}>
+                    <User size={18} />
                 </div>
             </button>
           </div>
@@ -119,6 +115,15 @@ const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTab }) =>
               </span>
             </button>
           ))}
+          <button
+              onClick={() => setActiveTab('profile')}
+              className={`flex flex-col items-center gap-1 transition-all duration-200 ${
+                activeTab === 'profile' ? (state.isDarkMode ? 'text-[#a855f7] scale-110' : 'text-indigo-600 scale-110') : (state.isDarkMode ? 'text-[#94a3b8]/50' : 'text-slate-300')
+              }`}
+            >
+              <User size={20} />
+              <span className={`text-[10px] font-bold ${activeTab === 'profile' ? 'opacity-100' : 'opacity-0'}`}>Profile</span>
+            </button>
         </nav>
 
         {showAddModal && <TransactionModal onClose={() => setShowAddModal(false)} />}

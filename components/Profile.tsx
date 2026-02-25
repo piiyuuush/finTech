@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import { useFinance } from '../context/FinanceContext';
 import { Account } from '../types';
 import { TRANSLATIONS } from '../constants';
+import { auth } from '../services/firebase';
+import { signOut } from 'firebase/auth';
 import { 
   PiggyBank, 
   CreditCard, 
@@ -17,7 +19,8 @@ import {
   User as UserIcon,
   ShieldCheck,
   Moon,
-  Check
+  Check,
+  LogOut
 } from 'lucide-react';
 import AccountModal from './AccountModal';
 
@@ -61,6 +64,12 @@ const Profile: React.FC = () => {
     setTimeout(() => setShowSavedToast(false), 2000);
   };
 
+  const handleLogout = async () => {
+    if (confirm('Are you sure you want to logout?')) {
+      await signOut(auth);
+    }
+  };
+
   const getIcon = (type: string) => {
       switch(type) {
           case 'Bank': return <Landmark size={20} />;
@@ -73,16 +82,22 @@ const Profile: React.FC = () => {
   return (
     <div className="space-y-8 animate-in fade-in duration-500 pb-20">
       {/* User Header */}
-      <div className={`flex flex-col sm:flex-row items-center gap-6 p-8 rounded-[40px] border relative overflow-hidden group transition-all duration-500 ${state.isDarkMode ? 'bg-[#1e1b39]/60 backdrop-blur-md border-white/5 shadow-none' : 'bg-white shadow-sm border-slate-100'}`}>
+      <div className={`flex flex-col sm:flex-row items-center gap-6 p-8 rounded-[40px] border relative overflow-hidden group transition-all duration-500 ${state.isDarkMode ? 'bg-[#1e1b39]/60 backdrop-blur-sm border-white/5 shadow-none' : 'bg-white shadow-sm border-slate-100'}`}>
           <div className={`w-24 h-24 rounded-full border-4 overflow-hidden shadow-xl group-hover:scale-105 transition-transform duration-500 relative z-10 flex items-center justify-center text-white ${state.isDarkMode ? 'border-white/5 bg-[#a855f7]' : 'border-slate-50 bg-indigo-500'}`}>
               <UserIcon size={40} />
           </div>
-          <div className="text-center sm:text-left relative z-10">
+          <div className="text-center sm:text-left relative z-10 flex-1">
               <h2 className={`text-3xl font-black tracking-tight transition-colors ${state.isDarkMode ? 'text-white' : 'text-slate-800'}`}>{state.userName}</h2>
               <p className={`font-bold text-xs uppercase tracking-[0.2em] mt-1 flex items-center justify-center sm:justify-start gap-2 transition-colors ${state.isDarkMode ? 'text-[#94a3b8]' : 'text-slate-400'}`}>
-                 <ShieldCheck size={14} className={state.isDarkMode ? 'text-[#10b981]' : 'text-emerald-500'} /> Premium Member • Joined Jan 2024
+                 <ShieldCheck size={14} className={state.isDarkMode ? 'text-[#10b981]' : 'text-emerald-500'} /> Premium Member • {state.userEmail}
               </p>
           </div>
+          <button 
+            onClick={handleLogout}
+            className="relative z-10 flex items-center gap-2 px-6 py-3 rounded-2xl bg-rose-50 text-rose-600 font-bold text-xs uppercase tracking-widest hover:bg-rose-100 transition-all active:scale-95"
+          >
+            <LogOut size={16} /> Logout
+          </button>
           <div className={`absolute top-0 right-0 w-64 h-64 blur-[100px] -mr-32 -mt-32 rounded-full pointer-events-none transition-colors ${state.isDarkMode ? 'bg-[#a855f7]/10' : 'bg-indigo-50/50'}`}></div>
       </div>
 
