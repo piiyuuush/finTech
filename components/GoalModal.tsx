@@ -47,8 +47,8 @@ const GoalModal: React.FC<Props> = ({ onClose, editingGoal }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-[110] animate-in fade-in duration-200">
-      <div className={`rounded-[32px] w-full max-w-md overflow-hidden animate-in slide-in-from-bottom-4 duration-300 transition-all ${state.isDarkMode ? 'bg-[#1e1b39] border border-white/10 shadow-2xl' : 'bg-white shadow-2xl'}`}>
+    <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-[100] animate-in fade-in duration-200">
+      <div className={`rounded-[40px] w-full max-w-md overflow-hidden animate-in slide-in-from-bottom-4 duration-300 transition-all ${state.isDarkMode ? 'bg-[#1e1b39] border border-white/10 shadow-2xl' : 'bg-white shadow-2xl'}`}>
         <form onSubmit={handleSave}>
           <div className={`p-6 flex justify-between items-center transition-colors ${state.isDarkMode ? 'bg-white/5 border-b border-white/5' : 'border-b border-slate-50 bg-slate-50/50'}`}>
             <h3 className={`text-xl font-black transition-colors ${state.isDarkMode ? 'text-white' : 'text-slate-800'}`}>{editingGoal ? 'Edit Goal' : 'New Financial Goal'}</h3>

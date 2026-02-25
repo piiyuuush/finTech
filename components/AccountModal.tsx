@@ -57,8 +57,8 @@ const AccountModal: React.FC<Props> = ({ onClose, editingAccount }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-[110] animate-in fade-in duration-200">
-      <div className={`rounded-[32px] w-full max-w-md overflow-hidden animate-in slide-in-from-bottom-4 duration-300 transition-all ${state.isDarkMode ? 'bg-[#1e1b39] border border-white/10 shadow-2xl' : 'bg-white shadow-2xl'}`}>
+    <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-[100] animate-in fade-in duration-200">
+      <div className={`rounded-[40px] w-full max-w-md overflow-hidden animate-in slide-in-from-bottom-4 duration-300 transition-all ${state.isDarkMode ? 'bg-[#1e1b39] border border-white/10 shadow-2xl' : 'bg-white shadow-2xl'}`}>
         <form onSubmit={handleSave}>
           <div className={`p-6 flex justify-between items-center transition-colors ${state.isDarkMode ? 'bg-white/5 border-b border-white/5' : 'border-b border-slate-50 bg-slate-50/50'}`}>
              <h3 className={`text-xl font-black transition-colors ${state.isDarkMode ? 'text-white' : 'text-slate-800'}`}>{editingAccount ? 'Edit Account' : 'Add New Account'}</h3>
@@ -66,7 +66,6 @@ const AccountModal: React.FC<Props> = ({ onClose, editingAccount }) => {
                 <X size={20} />
              </button>
           </div>
-
           <div className="p-8 space-y-6">
             <div className="space-y-4">
                {/* Account Name */}
@@ -139,7 +138,6 @@ const AccountModal: React.FC<Props> = ({ onClose, editingAccount }) => {
                   </div>
                </div>
             </div>
-
             <button 
               type="submit" 
               className={`w-full py-5 rounded-[24px] font-bold text-lg transition-all active:scale-[0.98] ${state.isDarkMode ? 'bg-white text-[#1e1b39] shadow-xl hover:bg-slate-100' : 'bg-slate-900 text-white shadow-xl shadow-slate-100 hover:bg-slate-800'}`}

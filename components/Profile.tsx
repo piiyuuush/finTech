@@ -80,7 +80,8 @@ const Profile: React.FC = () => {
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500 pb-20">
+    <>
+      <div className="space-y-8 animate-in fade-in duration-500 pb-20">
       {/* User Header */}
       <div className={`flex flex-col sm:flex-row items-center gap-6 p-8 rounded-[40px] border relative overflow-hidden group transition-all duration-500 ${state.isDarkMode ? 'bg-[#1e1b39]/60 backdrop-blur-sm border-white/5 shadow-none' : 'bg-white shadow-sm border-slate-100'}`}>
           <div className={`w-24 h-24 rounded-full border-4 overflow-hidden shadow-xl group-hover:scale-105 transition-transform duration-500 relative z-10 flex items-center justify-center text-white ${state.isDarkMode ? 'border-white/5 bg-[#a855f7]' : 'border-slate-50 bg-indigo-500'}`}>
@@ -237,8 +238,9 @@ const Profile: React.FC = () => {
               </div>
           </section>
       </div>
+      </div>
       {showAccModal && <AccountModal editingAccount={editingAccount} onClose={() => { setShowAccModal(false); setEditingAccount(undefined); }} />}
-    </div>
+    </>
   );
 };
 

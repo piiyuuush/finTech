@@ -43,7 +43,8 @@ const GoalsManager: React.FC = () => {
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500 pb-20">
+    <>
+      <div className="space-y-6 animate-in fade-in duration-500 pb-12">
       <div className="flex justify-between items-center">
         <div>
           <h2 className={`text-2xl font-black transition-colors ${state.isDarkMode ? 'text-white' : 'text-slate-900'}`}>Your Savings Goals</h2>
@@ -149,6 +150,15 @@ const GoalsManager: React.FC = () => {
           </div>
         ))}
       </div>
+    {state.goals.length === 0 && (
+              <div className={`py-20 rounded-[40px] border-2 border-dashed flex flex-col items-center justify-center transition-all ${
+                state.isDarkMode ? 'bg-[#1e1b39]/40 border-white/10 text-[#94a3b8]' : 'bg-white border-slate-100 text-slate-400'
+              }`}>
+                <Target size={48} className="mb-4 opacity-10" />
+                <p className="font-black">No goals established.</p>
+                <p className="text-xs font-medium mt-1">add a new goal to start tracking.</p>
+              </div>
+            )}
 
       {/* Budget Limits */}
       <section className="space-y-6">
@@ -207,7 +217,7 @@ const GoalsManager: React.FC = () => {
                       <MoreVertical size={20} />
                     </button>
                     {openBudgetMenuId === budget.id && (
-                      <div className={`absolute right-0 top-full mt-2 w-32 shadow-2xl rounded-2xl py-2 z-[60] border animate-in fade-in zoom-in duration-150 ${
+                      <div className={`relative right-0 top-full mt-2 w-32 shadow-2xl rounded-2xl py-2 z-[60] border animate-in fade-in zoom-in duration-150 ${
                         state.isDarkMode ? 'bg-[#1e1b39] border-white/10 text-white' : 'bg-white border-slate-50'
                       }`}>
                         <button 
@@ -252,10 +262,11 @@ const GoalsManager: React.FC = () => {
            </div>
          )}
       </section>
+      </div>
 
       {showGoalModal && <GoalModal editingGoal={editingGoal} onClose={() => { setShowGoalModal(false); setEditingGoal(undefined); }} />}
       {showBudgetModal && <BudgetModal editingBudget={editingBudget} onClose={() => { setShowBudgetModal(false); setEditingBudget(undefined); }} />}
-    </div>
+    </>
   );
 };
 

@@ -15,7 +15,7 @@ export enum TransactionSubtype {
 export interface Account {
   id: string;
   name: string;
-  type: 'Cash' | 'Bank' | 'Credit Card' | 'Investment';
+  type: 'Cash' | 'Bank';
   balance: number;
   cardNumber?: string;
   color?: string;

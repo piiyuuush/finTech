@@ -43,7 +43,7 @@ const AuthPage: React.FC<Props> = ({ onBack }) => {
         <div className="relative z-10">
            <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center font-bold text-2xl mb-12">F</div>
            <h2 className="text-4xl font-black leading-tight tracking-tight">Start your journey to <br /> financial freedom.</h2>
-           <p className="mt-6 text-indigo-100 font-medium text-lg max-w-xs">Join thousands of smart savers managing their wealth with FinTrack.</p>
+           <p className="mt-6 text-indigo-100 font-medium text-lg max-w-xs">Join our community for managing your wealth with FinTrack.</p>
         </div>
         <div className="relative z-10 p-8 rounded-[32px] bg-white/5 backdrop-blur-md border border-white/10">
            <p className="text-sm font-medium italic">"The smartest way to track your money. Simple, elegant, and powerful."</p>

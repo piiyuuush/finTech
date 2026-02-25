@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ArrowRight, BarChart3, ShieldCheck, Zap, TrendingUp, Globe } from 'lucide-react';
+import { ArrowRight, BarChart3, ShieldCheck, Zap, TrendingUp, Globe, MessageSquareText } from 'lucide-react';
 
 interface Props {
   onJoin: () => void;
@@ -33,7 +33,7 @@ const LandingPage: React.FC<Props> = ({ onJoin }) => {
             Master your <br /> <span className="text-indigo-600">financial destiny.</span>
           </h1>
           <p className="text-lg text-slate-500 font-medium leading-relaxed max-w-xl mx-auto lg:mx-0">
-            Take full control of your wealth with our world-class tracker. Set goals, analyze spending, and grow your future with AI-powered insights.
+            Take full control of your wealth with our world-class tracker. Set goals, analyze spending, and grow your future with visual analytical insights.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
             <button 
@@ -42,14 +42,6 @@ const LandingPage: React.FC<Props> = ({ onJoin }) => {
             >
               Start for Free <ArrowRight className="group-hover:translate-x-1 transition-transform" />
             </button>
-            <div className="flex items-center gap-3 px-6 py-4">
-              <div className="flex -space-x-2">
-                {[1,2,3].map(i => (
-                  <div key={i} className="w-8 h-8 rounded-full border-2 border-white bg-slate-200" />
-                ))}
-              </div>
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Joined by 10k+ users</p>
-            </div>
           </div>
         </div>
         <div className="flex-1 relative">
@@ -87,8 +79,9 @@ const LandingPage: React.FC<Props> = ({ onJoin }) => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
             {[
               { icon: <BarChart3 size={32} className="text-indigo-600" />, title: 'Smart Analytics', desc: 'Visualize your spending habits with deep-dive category breakdowns.' },
-              { icon: <ShieldCheck size={32} className="text-emerald-600" />, title: 'Bank-Grade Security', desc: 'Your data is encrypted and synced securely with Firebase cloud.' },
-              { icon: <Globe size={32} className="text-amber-600" />, title: 'Global Access', desc: 'Track in multiple currencies and languages across all your devices.' }
+              { icon: <ShieldCheck size={32} className="text-emerald-600" />, title: 'Authentication Security', desc: 'Your data is encrypted and synced securely with Firebase cloud.' },
+              { icon: <Globe size={32} className="text-amber-600" />, title: 'Global Access', desc: 'Track in multiple currencies and languages across all your devices.' },
+              { icon: <MessageSquareText size={32} className="text-blue-600" />,title: 'Automated Bank SMS Sync',desc: 'Securely capture bank SMS alerts in real-time into categorized transactions.'}
             ].map((feature, i) => (
               <div key={i} className="space-y-4 p-8 rounded-[40px] hover:bg-slate-50 transition-colors">
                 <div className="w-16 h-16 rounded-[24px] bg-white shadow-xl flex items-center justify-center">{feature.icon}</div>
