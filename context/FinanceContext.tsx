@@ -108,25 +108,32 @@ const financeReducer = (state: FinanceState, action: FinanceAction): FinanceStat
 const FinanceContext = createContext<{
   state: FinanceState;
   dispatch: React.Dispatch<FinanceAction>;
+  authLoading: boolean;
 } | undefined>(undefined);
 
 export const FinanceProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(financeReducer, initialState);
+  const [authLoading, setAuthLoading] = React.useState(true);
 
   // Auth Listener
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        dispatch({ 
-          type: 'SET_USER', 
-          payload: { uid: user.uid, name: user.displayName || 'User', email: user.email || '' } 
+        dispatch({
+          type: 'SET_USER',
+          payload: {
+            uid: user.uid,
+            name: user.displayName || 'User',
+            email: user.email || ''
+          }
         });
       } else {
         dispatch({ type: 'SET_USER', payload: null });
       }
+      setAuthLoading(false); // <-- critical line
     });
     return () => unsubscribe();
-  }, []);
+}, []);
 
   // Firestore Sync - Pull
   useEffect(() => {
@@ -155,7 +162,7 @@ export const FinanceProvider: React.FC<{ children: ReactNode }> = ({ children })
   }, [state.accounts, state.transactions, state.goals, state.budget, state.userName, state.currency, state.language, state.isDarkMode]);
 
   return (
-    <FinanceContext.Provider value={{ state, dispatch }}>
+    <FinanceContext.Provider value={{ state, dispatch, authLoading }}>
       {children}
     </FinanceContext.Provider>
   );

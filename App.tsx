@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { FinanceProvider, useFinance } from './context/FinanceContext';
 import Layout from './components/Layout';
@@ -11,11 +10,13 @@ import LandingPage from './components/LandingPage';
 import AuthPage from './components/AuthPage';
 
 const AppContent: React.FC = () => {
-  const { state } = useFinance();
+  const { state, authLoading } = useFinance();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [authView, setAuthView] = useState<'landing' | 'auth'>('landing');
 
   // If not authenticated, show landing or auth pages
+  if (authLoading) return (<div className="flex items-center justify-center h-screen">Loading...</div>
+);
   if (!state.isAuthenticated) {
     if (authView === 'landing') {
       return <LandingPage onJoin={() => setAuthView('auth')} />;

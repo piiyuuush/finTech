@@ -1,11 +1,6 @@
 
 import React from 'react';
-import { 
-  PieChart, 
-  Target, 
-  LayoutDashboard, 
-  FileText
-} from 'lucide-react';
+import { PieChart, Target, LayoutDashboard, FileText } from 'lucide-react';
 
 export const CATEGORIES = {
   INCOME: ['Salary', 'Freelance', 'Gifts', 'Investments', 'Sales', 'Borrowed', 'Other'],
@@ -95,4 +90,4 @@ export const getNavItems = (lang: string = 'en') => [
 
 export const NAV_ITEMS = getNavItems('en'); // Fallback
 
-export const ACCOUNT_TYPES = ['Cash', 'Bank', 'Credit Card', 'Investment'];
+export const ACCOUNT_TYPES = ['Cash', 'Bank', 'Credit Card'];

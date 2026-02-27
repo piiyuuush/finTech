@@ -17,7 +17,7 @@ import {
   Globe, 
   Coins, 
   User as UserIcon,
-  ShieldCheck,
+  Mail,
   Moon,
   Check,
   LogOut
@@ -90,7 +90,7 @@ const Profile: React.FC = () => {
           <div className="text-center sm:text-left relative z-10 flex-1">
               <h2 className={`text-3xl font-black tracking-tight transition-colors ${state.isDarkMode ? 'text-white' : 'text-slate-800'}`}>{state.userName}</h2>
               <p className={`font-bold text-xs uppercase tracking-[0.2em] mt-1 flex items-center justify-center sm:justify-start gap-2 transition-colors ${state.isDarkMode ? 'text-[#94a3b8]' : 'text-slate-400'}`}>
-                 <ShieldCheck size={14} className={state.isDarkMode ? 'text-[#10b981]' : 'text-emerald-500'} /> Premium Member • {state.userEmail}
+                 <Mail size={14} className={state.isDarkMode ? 'text-[#10b981]' : 'text-emerald-500'} />{state.userEmail}
               </p>
           </div>
           <button 
@@ -118,7 +118,7 @@ const Profile: React.FC = () => {
                   {state.accounts.map(acc => (
                       <div key={acc.id} className={`backdrop-blur-sm p-6 rounded-[32px] border flex items-center justify-between transition-all group relative ${state.isDarkMode ? 'bg-[#1e1b39]/40 border-white/5 shadow-none hover:border-white/20' : 'bg-white/80 border-slate-100 shadow-sm hover:border-indigo-100 hover:shadow-xl hover:-translate-y-1'} ${openAccMenuId === acc.id ? 'z-50' : 'z-0'}`}>
                           <div className="flex items-center gap-4">
-                              <div className={`p-4 rounded-2xl transition-transform group-hover:scale-110 shadow-lg ${state.isDarkMode ? (acc.color === 'bg-indigo-600' ? 'bg-[#a855f7]' : acc.color || 'bg-[#a855f7]') : acc.color || 'bg-slate-50'} text-white shadow-slate-100`}>{getIcon(acc.type)}</div>
+                              <div className={`p-4 rounded-2xl transition-transform group-hover:scale-110 shadow-lg ${state.isDarkMode ? (acc.color === 'bg-indigo-600' ? 'bg-[#a855f7]' : acc.color || 'bg-[#a855f7]') : acc.color || 'bg-slate-50'} text-white`}>{getIcon(acc.type)}</div>
                               <div>
                                   <p className={`font-black text-sm transition-colors ${state.isDarkMode ? 'text-white' : 'text-slate-800'}`}>{acc.name}</p>
                                   <p className={`text-[10px] font-bold uppercase tracking-[0.15em] mt-1 transition-colors ${state.isDarkMode ? 'text-[#94a3b8]' : 'text-slate-400'}`}>{acc.type} • {acc.cardNumber?.slice(-4)}</p>
