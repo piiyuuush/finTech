@@ -42,34 +42,95 @@ const TransactionModal: React.FC<Props> = ({ onClose, editingTransaction }) => {
     e.preventDefault();
     if (!formData.amount || !formData.accountId) return;
 
+    const getAccountBalance = (accountId: string) =>
+      state.accounts.find(acc => acc.id === accountId)?.balance ?? 0;
+
     const transactionData: Transaction = {
       id: editingTransaction?.id || Math.random().toString(36).substr(2, 9),
       type,
       ...formData as any
     };
 
+    // ---- SIMULATION LOGIC ----
+    const simulateBalance = (t: Transaction) => {
+      let balance = getAccountBalance(t.accountId);
+
+      // Step 1: Reverse old transaction (if editing)
+      if (editingTransaction) {
+        if (
+          editingTransaction.type === TransactionType.EXPENSE ||
+          editingTransaction.type === TransactionType.LENT
+        ) {
+          balance += editingTransaction.amount;
+        } else if (
+          editingTransaction.type === TransactionType.INCOME ||
+          editingTransaction.type === TransactionType.BORROWED
+        ) {
+          balance -= editingTransaction.amount;
+        } else if (editingTransaction.type === TransactionType.TRANSFER) {
+          balance += editingTransaction.amount;
+        }
+      }
+
+      // Step 2: Apply new transaction effect
+      if (
+        t.type === TransactionType.EXPENSE ||
+        t.type === TransactionType.LENT ||
+        t.type === TransactionType.TRANSFER
+      ) {
+        balance -= t.amount;
+      }
+
+      return balance;
+    };
+
+    // ---- VALIDATION ----
+    if (simulateBalance(transactionData) < 0) {
+      alert("Transaction would result in negative balance.");
+      return;
+    }
+
+    // ---- APPLY CHANGES ----
     const applyBalanceChanges = (t: Transaction, multiplier: 1 | -1) => {
       if (t.type === TransactionType.TRANSFER) {
         if (t.toAccountId) {
-          dispatch({ type: 'UPDATE_ACCOUNT_BALANCE', payload: { id: t.accountId, amount: -t.amount * multiplier } });
-          dispatch({ type: 'UPDATE_ACCOUNT_BALANCE', payload: { id: t.toAccountId, amount: t.amount * multiplier } });
+          dispatch({
+            type: "UPDATE_ACCOUNT_BALANCE",
+            payload: { id: t.accountId, amount: -t.amount * multiplier }
+          });
+          dispatch({
+            type: "UPDATE_ACCOUNT_BALANCE",
+            payload: { id: t.toAccountId, amount: t.amount * multiplier }
+          });
         }
-      } else if (t.type === TransactionType.INCOME || t.type === TransactionType.BORROWED) {
-        dispatch({ type: 'UPDATE_ACCOUNT_BALANCE', payload: { id: t.accountId, amount: t.amount * multiplier } });
-      } else if (t.type === TransactionType.EXPENSE || t.type === TransactionType.LENT) {
-        dispatch({ type: 'UPDATE_ACCOUNT_BALANCE', payload: { id: t.accountId, amount: -t.amount * multiplier } });
+      } else if (
+        t.type === TransactionType.INCOME ||
+        t.type === TransactionType.BORROWED
+      ) {
+        dispatch({
+          type: "UPDATE_ACCOUNT_BALANCE",
+          payload: { id: t.accountId, amount: t.amount * multiplier }
+        });
+      } else if (
+        t.type === TransactionType.EXPENSE ||
+        t.type === TransactionType.LENT
+      ) {
+        dispatch({
+          type: "UPDATE_ACCOUNT_BALANCE",
+          payload: { id: t.accountId, amount: -t.amount * multiplier }
+        });
       }
     };
 
     if (editingTransaction) {
       applyBalanceChanges(editingTransaction, -1);
-      dispatch({ type: 'UPDATE_TRANSACTION', payload: transactionData });
+      dispatch({ type: "UPDATE_TRANSACTION", payload: transactionData });
       applyBalanceChanges(transactionData, 1);
     } else {
-      dispatch({ type: 'ADD_TRANSACTION', payload: transactionData });
+      dispatch({ type: "ADD_TRANSACTION", payload: transactionData });
       applyBalanceChanges(transactionData, 1);
     }
-    
+
     onClose();
   };
 
