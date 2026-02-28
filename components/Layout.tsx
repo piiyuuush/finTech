@@ -30,7 +30,6 @@ const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTab }) =>
           <div className={`w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-bold shadow-lg ${state.isDarkMode ? 'bg-[#a855f7]' : ''}`}>F</div>
           <span onClick={() => setActiveTab('dashboard')} className={`text-xl font-black tracking-tight cursor-pointer transition-colors ${state.isDarkMode ? 'text-white' : 'text-slate-800'}`}>FinTrack</span>
         </div>
-        
         <div className="flex flex-col p-6 gap-2 mt-2">
           {navItems.map((item) => (
             <button
@@ -98,33 +97,62 @@ const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTab }) =>
         >
           <Plus size={32} className="group-hover:rotate-90 transition-transform duration-300" />
         </button>
-
-        {/* Bottom Nav - Mobile */}
-        <nav className={`md:hidden fixed bottom-0 left-0 right-0 border-t flex justify-around items-center p-4 z-40 pb-6 rounded-t-[32px] transition-all duration-500 ${state.isDarkMode ? 'bg-[#161336]/95 backdrop-blur-xl border-white/5 shadow-2xl' : 'bg-white border-slate-100 shadow-[0_-10px_25px_-5px_rgba(0,0,0,0.05)]'}`}>
-          {navItems.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => setActiveTab(item.id)}
-              className={`flex flex-col items-center gap-1 transition-all duration-200 ${
-                activeTab === item.id ? (state.isDarkMode ? 'text-[#a855f7] scale-110' : 'text-indigo-600 scale-110') : (state.isDarkMode ? 'text-[#94a3b8]/50' : 'text-slate-300')
-              }`}
-            >
-              {item.icon}
-              <span className={`text-[10px] font-bold ${activeTab === item.id ? 'opacity-100' : 'opacity-0'}`}>
-                {item.label.split(' ')[0]}
-              </span>
-            </button>
-          ))}
+        
+      {/* mobile navigation */}
+       <nav
+        className={`md:hidden fixed bottom-0 left-0 right-0 border-t grid grid-cols-5 items-center p-4 z-40 pb-6 rounded-t-[32px] transition-all duration-500 ${
+          state.isDarkMode
+            ? 'bg-[#161336]/95 backdrop-blur-xl border-white/5 shadow-2xl'
+            : 'bg-white border-slate-100 shadow-[0_-10px_25px_-5px_rgba(0,0,0,0.05)]'
+        }`}
+      >
+        {navItems.map((item) => (
           <button
-              onClick={() => setActiveTab('profile')}
-              className={`flex flex-col items-center gap-1 transition-all duration-200 ${
-                activeTab === 'profile' ? (state.isDarkMode ? 'text-[#a855f7] scale-110' : 'text-indigo-600 scale-110') : (state.isDarkMode ? 'text-[#94a3b8]/50' : 'text-slate-300')
+            key={item.id}
+            onClick={() => setActiveTab(item.id)}
+            className={`flex flex-col items-center justify-center gap-1 transition-all duration-200 ${
+              activeTab === item.id
+                ? state.isDarkMode
+                  ? 'text-[#a855f7]'
+                  : 'text-indigo-600'
+                : state.isDarkMode
+                ? 'text-[#94a3b8]/50'
+                : 'text-slate-300'
+            }`}
+          >
+            {item.icon}
+            <span
+              className={`text-[10px] font-bold transition-opacity duration-200 ${
+                activeTab === item.id ? 'opacity-100' : 'opacity-0'
               }`}
             >
-              <User size={20} />
-              <span className={`text-[10px] font-bold ${activeTab === 'profile' ? 'opacity-100' : 'opacity-0'}`}>Profile</span>
-            </button>
-        </nav>
+              {item.label.split(' ')[0]}
+            </span>
+          </button>
+        ))}
+
+        <button
+          onClick={() => setActiveTab('profile')}
+          className={`flex flex-col items-center justify-center gap-1 transition-all duration-200 ${
+            activeTab === 'profile'
+              ? state.isDarkMode
+                ? 'text-[#a855f7]'
+                : 'text-indigo-600'
+              : state.isDarkMode
+              ? 'text-[#94a3b8]/50'
+              : 'text-slate-300'
+          }`}
+        >
+          <User size={20} />
+          <span
+            className={`text-[10px] font-bold transition-opacity duration-200 ${
+              activeTab === 'profile' ? 'opacity-100' : 'opacity-0'
+            }`}
+          >
+            Profile
+          </span>
+        </button>
+      </nav>
 
         {showAddModal && <TransactionModal onClose={() => setShowAddModal(false)} />}
       </main>
