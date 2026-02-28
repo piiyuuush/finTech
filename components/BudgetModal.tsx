@@ -33,7 +33,6 @@ const BudgetModal: React.FC<Props> = ({ onClose, editingBudget }) => {
       id: editingBudget?.id || Math.random().toString(36).substr(2, 9), 
       category: formData.category!,
       limit: formData.limit!,
-      currentAmount: formData.currentAmount || 0,
       icon: formData.icon || '💰'
     };
     
@@ -73,8 +72,6 @@ const BudgetModal: React.FC<Props> = ({ onClose, editingBudget }) => {
                   <PieChart className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${state.isDarkMode ? 'text-white/20' : 'text-slate-400'}`} size={18} />
                 </div>
               </div>
-              
-              <div className="grid grid-cols-2 gap-4">
                 <div className="relative group">
                   <p className={`text-[10px] font-black uppercase tracking-widest ml-1 mb-1 transition-colors ${state.isDarkMode ? 'text-[#94a3b8]' : 'text-slate-400'}`}>Monthly Limit</p>
                   <div className="relative">
@@ -88,17 +85,6 @@ const BudgetModal: React.FC<Props> = ({ onClose, editingBudget }) => {
                     />
                     <Wallet className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${state.isDarkMode ? 'text-white/20' : 'text-slate-400'}`} size={16} />
                   </div>
-                </div>
-                <div className="relative group">
-                  <p className={`text-[10px] font-black uppercase tracking-widest ml-1 mb-1 transition-colors ${state.isDarkMode ? 'text-[#94a3b8]' : 'text-slate-400'}`}>Spent So Far</p>
-                  <input 
-                    type="number" 
-                    className={`w-full p-4 rounded-2xl text-sm font-semibold focus:outline-none transition-all ${state.isDarkMode ? 'bg-white/5 border border-white/10 text-white placeholder:text-white/20' : 'bg-slate-50 border border-slate-100 text-slate-800'}`} 
-                    placeholder="0" 
-                    value={formData.currentAmount || ''} 
-                    onChange={e => setFormData({...formData, currentAmount: parseFloat(e.target.value)})} 
-                  />
-                </div>
               </div>
 
               <div className="relative group">

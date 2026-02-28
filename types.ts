@@ -48,7 +48,6 @@ export interface FinancialBudget {
   id: string;
   category: string;
   limit: number;
-  currentAmount: number;
   icon?: string;
 }
 

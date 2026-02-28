@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { useFinance } from '../context/FinanceContext';
-import { FinancialGoal, FinancialBudget } from '../types';
+import { FinancialGoal, FinancialBudget, TransactionType } from '../types';
 import { Plus, Target, Calendar, MoreVertical, Edit2, Trash2 } from 'lucide-react';
 import GoalModal from './GoalModal';
 import BudgetModal from './BudgetModal';
@@ -28,20 +28,34 @@ const GoalsManager: React.FC = () => {
     }
     setOpenGoalMenuId(null);
   };
-
+  
   const handleEditBudget = (budget: FinancialBudget) => {
     setEditingBudget(budget);
     setShowBudgetModal(true);
     setOpenBudgetMenuId(null);
   };
-
+  
   const handleDeleteBudget = (id: string) => {
     if (confirm('Are you sure you want to delete this budget?')) {
       dispatch({ type: 'DELETE_BUDGET', payload: id });
     }
     setOpenBudgetMenuId(null);
   };
+  const now = new Date();
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
 
+  const getMonthlyUsage = (category: string) => {
+    return state.transactions
+      .filter(t =>
+        t.type === TransactionType.EXPENSE &&
+        t.category === category &&
+        new Date(t.date).getMonth() === currentMonth &&
+        new Date(t.date).getFullYear() === currentYear
+      )
+      .reduce((sum, t) => sum + t.amount, 0);
+  };
+  
   return (
     <>
       <div className="space-y-6 animate-in fade-in duration-500 pb-12">
@@ -179,78 +193,159 @@ const GoalsManager: React.FC = () => {
             </button>
          </div>
          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {state.budget.map(budget => (
-            <div 
-              key={budget.id}
-              onClick={() => handleEditBudget(budget)}
-              className={`p-6 rounded-[32px] border flex items-center justify-between group cursor-pointer transition-all relative overflow-hidden ${
-                state.isDarkMode 
-                  ? 'bg-[#1e1b39]/40 border-white/5 shadow-none hover:border-white/20' 
-                  : 'bg-white border-slate-100 shadow-sm hover:border-indigo-100 hover:shadow-xl'
-              } ${openBudgetMenuId === budget.id ? 'z-50' : 'z-0'}`}
+          {state.budget.map((budget) => {
+          const spent = getMonthlyUsage(budget.category);
+          const percentage = budget.limit > 0 ? (spent / budget.limit) * 100 : 0;
+          const isOverspent = spent > budget.limit;
+
+  return (
+    <div
+      key={budget.id}
+      onClick={() => handleEditBudget(budget)}
+      className={`p-6 rounded-[32px] border flex items-center justify-between group cursor-pointer transition-all relative overflow-hidden ${
+        state.isDarkMode
+          ? "bg-[#1e1b39]/40 border-white/5 shadow-none hover:border-white/20"
+          : "bg-white border-slate-100 shadow-sm hover:border-indigo-100 hover:shadow-xl"
+      } ${openBudgetMenuId === budget.id ? "z-50" : "z-0"}`}
+    >
+      {/* Left */}
+      <div className="flex items-center gap-5 relative z-10">
+        <div
+          className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-inner group-hover:scale-110 transition-transform ${
+            state.isDarkMode
+              ? "bg-[#a855f7]/10 text-[#a855f7]"
+              : "bg-indigo-50 text-indigo-600"
+          }`}
+        >
+          {budget.icon || "💰"}
+        </div>
+
+        <div>
+          <p
+            className={`font-black text-sm uppercase tracking-tight ${
+              state.isDarkMode ? "text-white" : "text-slate-800"
+            }`}
+          >
+            {budget.category}
+          </p>
+
+          <p
+            className={`text-[10px] font-bold uppercase tracking-widest mt-1 ${
+              state.isDarkMode ? "text-[#94a3b8]" : "text-slate-400"
+            }`}
+          >
+            Monthly Allowance
+          </p>
+        </div>
+      </div>
+
+      {/* Right */}
+      <div className="flex items-center gap-4 relative z-10">
+        <div className="text-right">
+          <p
+            className={`font-black text-sm ${
+              state.isDarkMode ? "text-white" : "text-slate-800"
+            }`}
+          >
+            {state.currency}
+            {spent.toLocaleString()} / {state.currency}
+            {budget.limit.toLocaleString()}
+          </p>
+
+          <p
+            className={`text-[10px] font-black uppercase mt-1 ${
+              isOverspent
+                ? "text-rose-500"
+                : state.isDarkMode
+                ? "text-[#a855f7]"
+                : "text-indigo-500"
+            }`}
+          >
+            {Math.round(percentage)}% used
+          </p>
+        </div>
+
+        <div className="relative">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setOpenBudgetMenuId(
+                openBudgetMenuId === budget.id ? null : budget.id
+              );
+            }}
+            className={`p-2 rounded-full ${
+              state.isDarkMode
+                ? "text-[#94a3b8] hover:text-white hover:bg-white/5"
+                : "text-slate-300 hover:text-slate-600 hover:bg-slate-50"
+            }`}
+          >
+            <MoreVertical size={20} />
+          </button>
+
+          {openBudgetMenuId === budget.id && (
+            <div
+              className={`absolute right-0 top-full mt-2 w-32 shadow-2xl rounded-2xl py-2 z-[60] border animate-in fade-in zoom-in duration-150 ${
+                state.isDarkMode
+                  ? "bg-[#1e1b39] border-white/10 text-white"
+                  : "bg-white border-slate-50"
+              }`}
             >
-               <div className="flex items-center gap-5 relative z-10">
-                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-inner group-hover:scale-110 transition-transform ${
-                    state.isDarkMode ? 'bg-[#a855f7]/10 text-[#a855f7]' : 'bg-indigo-50 text-indigo-600'
-                  }`}>
-                    {budget.icon || '💰'}
-                  </div>
-                  <div>
-                     <p className={`font-black text-sm uppercase tracking-tight transition-colors ${state.isDarkMode ? 'text-white' : 'text-slate-800'}`}>{budget.category}</p>
-                     <p className={`text-[10px] font-bold uppercase tracking-widest mt-1 transition-colors ${state.isDarkMode ? 'text-[#94a3b8]' : 'text-slate-400'}`}>Monthly Allowance</p>
-                  </div>
-               </div>
-               <div className="flex items-center gap-4 relative z-10">
-                  <div className="text-right">
-                    <p className={`font-black text-sm transition-colors ${state.isDarkMode ? 'text-white' : 'text-slate-800'}`}>{state.currency}{budget.currentAmount.toLocaleString()} / {state.currency}{budget.limit.toLocaleString()}</p>
-                    <p className={`text-[10px] font-black uppercase mt-1 ${budget.currentAmount > budget.limit ? 'text-rose-500' : (state.isDarkMode ? 'text-[#a855f7]' : 'text-indigo-500')}`}>
-                      {Math.round((budget.currentAmount/budget.limit) * 100)}% used
-                    </p>
-                  </div>
-                  <div className="relative">
-                    <button 
-                      onClick={(e) => { e.stopPropagation(); setOpenBudgetMenuId(openBudgetMenuId === budget.id ? null : budget.id); }}
-                      className={`p-2 rounded-full transition-colors ${
-                        state.isDarkMode ? 'text-[#94a3b8] hover:text-white hover:bg-white/5' : 'text-slate-300 hover:text-slate-600 hover:bg-slate-50'
-                      }`}
-                    >
-                      <MoreVertical size={20} />
-                    </button>
-                    {openBudgetMenuId === budget.id && (
-                      <div className={`relative right-0 top-full mt-2 w-32 shadow-2xl rounded-2xl py-2 z-[60] border animate-in fade-in zoom-in duration-150 ${
-                        state.isDarkMode ? 'bg-[#1e1b39] border-white/10 text-white' : 'bg-white border-slate-50'
-                      }`}>
-                        <button 
-                          onClick={(e) => { e.stopPropagation(); handleEditBudget(budget); }}
-                          className={`w-full px-4 py-2 text-left text-xs font-bold flex items-center gap-2 transition-colors ${
-                            state.isDarkMode ? 'hover:bg-white/5' : 'hover:bg-slate-50'
-                          }`}
-                        >
-                          <Edit2 size={12} className={state.isDarkMode ? 'text-[#a855f7]' : 'text-blue-600'} /> Edit
-                        </button>
-                        <button 
-                          onClick={(e) => { e.stopPropagation(); handleDeleteBudget(budget.id); }}
-                          className={`w-full px-4 py-2 text-left text-xs font-bold flex items-center gap-2 transition-colors text-rose-600 ${
-                            state.isDarkMode ? 'hover:bg-white/5' : 'hover:bg-slate-50'
-                          }`}
-                        >
-                          <Trash2 size={12} /> Delete
-                        </button>
-                      </div>
-                    )}
-                  </div>
-               </div>
-               
-               {/* Progress bar background */}
-               <div className={`absolute bottom-0 left-0 h-1 w-full overflow-hidden transition-colors ${state.isDarkMode ? 'bg-white/5' : 'bg-slate-100'}`}>
-                 <div 
-                   className={`h-full transition-all duration-1000 ${budget.currentAmount > budget.limit ? 'bg-rose-500' : (state.isDarkMode ? 'bg-[#a855f7]' : 'bg-indigo-500')}`}
-                   style={{ width: `${Math.min(100, (budget.currentAmount/budget.limit) * 100)}%` }}
-                 />
-               </div>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleEditBudget(budget);
+                }}
+                className={`w-full px-4 py-2 text-left text-xs font-bold flex items-center gap-2 ${
+                  state.isDarkMode ? "hover:bg-white/5" : "hover:bg-slate-50"
+                }`}
+              >
+                <Edit2
+                  size={12}
+                  className={
+                    state.isDarkMode ? "text-[#a855f7]" : "text-blue-600"
+                  }
+                />
+                Edit
+              </button>
+
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDeleteBudget(budget.id);
+                }}
+                className={`w-full px-4 py-2 text-left text-xs font-bold flex items-center gap-2 text-rose-600 ${
+                  state.isDarkMode ? "hover:bg-white/5" : "hover:bg-slate-50"
+                }`}
+              >
+                <Trash2 size={12} />
+                Delete
+              </button>
             </div>
-          ))}
-         </div>
+          )}
+        </div>
+      </div>
+
+      {/* Progress Bar */}
+      <div
+        className={`absolute bottom-0 left-0 h-1 w-full ${
+          state.isDarkMode ? "bg-white/5" : "bg-slate-100"
+        }`}
+      >
+        <div
+          className={`h-full transition-all duration-700 ${
+            isOverspent
+              ? "bg-rose-500"
+              : state.isDarkMode
+              ? "bg-[#a855f7]"
+              : "bg-indigo-500"
+          }`}
+          style={{ width: `${percentage}%` }}
+        />
+      </div>
+    </div>
+  );
+})}
+</div>
 
          {state.budget.length === 0 && (
            <div className={`py-20 rounded-[40px] border-2 border-dashed flex flex-col items-center justify-center transition-all ${
