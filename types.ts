@@ -39,6 +39,7 @@ export interface FinancialGoal {
   name: string;
   targetAmount: number;
   currentAmount: number;
+  savedInAccountId: string;
   deadline: string;
   icon?: string;
 }

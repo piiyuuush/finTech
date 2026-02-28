@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { useFinance } from '../context/FinanceContext';
 import { FinancialGoal } from '../types';
-import { X, Target, Calendar, Sparkles } from 'lucide-react';
+import { X, Target, Calendar, Sparkles, ChevronDown } from 'lucide-react';
+import { TransactionType } from '../types';
 
 interface Props {
   onClose: () => void;
@@ -11,11 +12,13 @@ interface Props {
 
 const GoalModal: React.FC<Props> = ({ onClose, editingGoal }) => {
   const { state, dispatch } = useFinance();
+  const [type, setType] = useState<TransactionType>(TransactionType.INCOME);
   const [formData, setFormData] = useState<Partial<FinancialGoal>>({
     name: '',
     targetAmount: 0,
     currentAmount: 0,
     deadline: new Date().toISOString().split('T')[0],
+    savedInAccountId: state.accounts[0]?.id || '',
     icon: '🎯'
   });
 
@@ -25,27 +28,55 @@ const GoalModal: React.FC<Props> = ({ onClose, editingGoal }) => {
     }
   }, [editingGoal]);
 
-  const handleSave = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.name || !formData.targetAmount) return;
+    const handleSave = (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!formData.name || !formData.targetAmount || !formData.savedInAccountId) return;
 
-    const goalPayload: FinancialGoal = { 
-      id: editingGoal?.id || Math.random().toString(36).substr(2, 9), 
-      name: formData.name!,
-      targetAmount: formData.targetAmount!,
-      currentAmount: formData.currentAmount || 0,
-      deadline: formData.deadline!,
-      icon: formData.icon || '🎯'
+      const getAccountBalance = (accountId: string) =>
+        state.accounts.find(acc => acc.id === accountId)?.balance ?? 0;
+
+      const oldAmount = editingGoal?.currentAmount || 0;
+      const newAmount = formData.currentAmount || 0;
+      const difference = newAmount - oldAmount; // 🔥 key logic
+
+      const accountBalance = getAccountBalance(formData.savedInAccountId);
+
+      // ---- VALIDATION ----
+      if (difference > 0 && accountBalance < difference) {
+        alert("Insufficient balance in selected account.");
+        return;
+      }
+
+      const goalPayload: FinancialGoal = { 
+        id: editingGoal?.id || Math.random().toString(36).substr(2, 9), 
+        name: formData.name!,
+        targetAmount: formData.targetAmount!,
+        currentAmount: newAmount,
+        savedInAccountId: formData.savedInAccountId!,
+        deadline: formData.deadline!,
+        icon: formData.icon || '🎯'
+      };
+
+      // ---- APPLY BALANCE CHANGE ----
+      if (difference !== 0) {
+        dispatch({
+          type: "UPDATE_ACCOUNT_BALANCE",
+          payload: {
+            id: formData.savedInAccountId,
+            amount: -difference
+          }
+        });
+      }
+
+      // ---- SAVE GOAL ----
+      if (editingGoal) {
+        dispatch({ type: "UPDATE_GOAL", payload: goalPayload });
+      } else {
+        dispatch({ type: "ADD_GOAL", payload: goalPayload });
+      }
+
+      onClose();
     };
-    
-    if (editingGoal) {
-      dispatch({ type: 'UPDATE_GOAL', payload: goalPayload });
-    } else {
-      dispatch({ type: 'ADD_GOAL', payload: goalPayload });
-    }
-    onClose();
-  };
-
   return (
     <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-[100] animate-in fade-in duration-200">
       <div className={`rounded-[40px] w-full max-w-md overflow-hidden animate-in slide-in-from-bottom-4 duration-300 transition-all ${state.isDarkMode ? 'bg-[#1e1b39] border border-white/10 shadow-2xl' : 'bg-white shadow-2xl'}`}>
@@ -106,6 +137,38 @@ const GoalModal: React.FC<Props> = ({ onClose, editingGoal }) => {
                   />
                   <Calendar className={`absolute right-4 top-1/2 -translate-y-1/2 transition-colors ${state.isDarkMode ? 'text-white/20' : 'text-slate-400'} pointer-events-none`} size={16} />
                 </div>
+              </div>
+              <div className="relative group">
+                <p className={`text-[10px] font-black uppercase tracking-widest ml-1 mb-1 transition-colors ${state.isDarkMode ? 'text-[#94a3b8]' : 'text-slate-400'}`}>
+                  Saved In Account
+                </p>
+                <select 
+                  required
+                  className={`w-full p-4 rounded-2xl text-sm font-semibold appearance-none focus:ring-2 focus:outline-none transition-all ${
+                    state.isDarkMode 
+                      ? 'bg-white/5 border border-white/10 text-white focus:ring-[#a855f7]/20' 
+                      : 'bg-slate-50 border border-slate-100 text-slate-800 focus:ring-blue-100'
+                  }`}
+                  value={formData.savedInAccountId}
+                  onChange={(e) => setFormData({...formData, savedInAccountId: e.target.value})}
+                >
+                  {state.accounts.map(acc => (
+                    <option 
+                      key={acc.id} 
+                      value={acc.id} 
+                      className={state.isDarkMode ? 'bg-[#1e1b39] text-white' : ''}
+                    >
+                      {acc.name}
+                    </option>
+                  ))}
+                </select>
+
+                <ChevronDown
+                  className={`absolute right-4 bottom-4 transition-colors ${
+                    state.isDarkMode ? 'text-white/40' : 'text-slate-400'
+                  } pointer-events-none`}
+                  size={18}
+                />
               </div>
             </div>
             <button 
