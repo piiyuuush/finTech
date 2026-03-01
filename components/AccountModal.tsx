@@ -106,7 +106,7 @@ const AccountModal: React.FC<Props> = ({ onClose, editingAccount }) => {
                </div>
 
                {/* Card Number Simulation */}
-               <div className="relative group">
+               {(formData.type === 'Credit Card' || formData.type === 'Bank')  && <div className="relative group">
                   <p className={`text-[10px] font-black uppercase tracking-widest ml-1 mb-1 flex items-center gap-1 transition-colors ${state.isDarkMode ? 'text-[#94a3b8]' : 'text-slate-400'}`}>
                     <Hash size={10} /> Card Number Display
                   </p>
@@ -117,7 +117,7 @@ const AccountModal: React.FC<Props> = ({ onClose, editingAccount }) => {
                     value={formData.cardNumber}
                     onChange={(e) => setFormData({...formData, cardNumber: e.target.value})}
                   />
-               </div>
+               </div>}
 
                {/* Color Picker */}
                <div className="relative group">

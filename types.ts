@@ -26,6 +26,7 @@ export interface Transaction {
   accountId: string;
   toAccountId?: string; // For transfers
   person?: string;      // For lending/borrowing
+  email?: string;       // For lending/borrowing
   type: TransactionType;
   subtype: TransactionSubtype;
   category: string;

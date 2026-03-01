@@ -266,62 +266,20 @@ const GoalsManager: React.FC = () => {
         </div>
 
         <div className="relative">
+
           <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setOpenBudgetMenuId(
-                openBudgetMenuId === budget.id ? null : budget.id
-              );
-            }}
-            className={`p-2 rounded-full ${
-              state.isDarkMode
-                ? "text-[#94a3b8] hover:text-white hover:bg-white/5"
-                : "text-slate-300 hover:text-slate-600 hover:bg-slate-50"
-            }`}
-          >
-            <MoreVertical size={20} />
-          </button>
-
-          {openBudgetMenuId === budget.id && (
-            <div
-              className={`absolute right-0 top-full mt-2 w-32 shadow-2xl rounded-2xl py-2 z-[60] border animate-in fade-in zoom-in duration-150 ${
-                state.isDarkMode
-                  ? "bg-[#1e1b39] border-white/10 text-white"
-                  : "bg-white border-slate-50"
-              }`}
-            >
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleEditBudget(budget);
-                }}
-                className={`w-full px-4 py-2 text-left text-xs font-bold flex items-center gap-2 ${
-                  state.isDarkMode ? "hover:bg-white/5" : "hover:bg-slate-50"
-                }`}
-              >
-                <Edit2
-                  size={12}
-                  className={
-                    state.isDarkMode ? "text-[#a855f7]" : "text-blue-600"
-                  }
-                />
-                Edit
-              </button>
-
-              <button
                 onClick={(e) => {
                   e.stopPropagation();
                   handleDeleteBudget(budget.id);
                 }}
-                className={`w-full px-4 py-2 text-left text-xs font-bold flex items-center gap-2 text-rose-600 ${
-                  state.isDarkMode ? "hover:bg-white/5" : "hover:bg-slate-50"
-                }`}
+                className={`p-2 rounded-full ${
+              state.isDarkMode
+                ? "text-[#94a3b8] hover:text-white hover:bg-white/5"
+                : "text-slate-300 hover:text-slate-600 hover:bg-slate-50"
+            }`}
               >
-                <Trash2 size={12} />
-                Delete
+                <Trash2 size={20} />
               </button>
-            </div>
-          )}
         </div>
       </div>
 

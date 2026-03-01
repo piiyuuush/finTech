@@ -21,6 +21,7 @@ const TransactionModal: React.FC<Props> = ({ onClose, editingTransaction }) => {
     accountId: state.accounts[0]?.id || '',
     toAccountId: state.accounts[1]?.id || '',
     person: '',
+    email: '',
     subtype: TransactionSubtype.ONE_TIME
   });
 
@@ -213,22 +214,6 @@ const TransactionModal: React.FC<Props> = ({ onClose, editingTransaction }) => {
                  </div>
                )}
 
-               {(type === TransactionType.LENT || type === TransactionType.BORROWED) && (
-                 <div className="relative group animate-in slide-in-from-top-2 duration-200">
-                    <p className={`text-[10px] font-black uppercase tracking-widest ml-1 mb-1 transition-colors ${state.isDarkMode ? 'text-[#94a3b8]' : 'text-slate-400'}`}>Associate / Person</p>
-                    <div className="relative">
-                      <input 
-                        required
-                        type="text" 
-                        placeholder="Name..." 
-                        className={`w-full p-4 pl-12 rounded-2xl text-sm font-semibold focus:outline-none transition-all ${state.isDarkMode ? 'bg-white/5 border border-white/10 text-white placeholder:text-white/20' : 'bg-slate-50 border border-slate-100 text-slate-800'}`}
-                        value={formData.person}
-                        onChange={(e) => setFormData({...formData, person: e.target.value})}
-                      />
-                      <User className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${state.isDarkMode ? 'text-white/20' : 'text-slate-300'}`} size={18} />
-                    </div>
-                 </div>
-               )}
 
                {type !== TransactionType.TRANSFER && (
                  <div className="relative group">
@@ -245,6 +230,40 @@ const TransactionModal: React.FC<Props> = ({ onClose, editingTransaction }) => {
                     </select>
                     <ChevronDown className={`absolute right-4 bottom-4 transition-colors ${state.isDarkMode ? 'text-white/40' : 'text-slate-400'} pointer-events-none`} size={18} />
                  </div>
+               )}
+
+               {(type === TransactionType.LENT || type === TransactionType.BORROWED) && (
+                <>
+                 <div className="relative group animate-in slide-in-from-top-2 duration-200">
+                    <p className={`text-[10px] font-black uppercase tracking-widest ml-1 mb-1 transition-colors ${state.isDarkMode ? 'text-[#94a3b8]' : 'text-slate-400'}`}>Associate / Person</p>
+                    <div className="relative">
+                      <input 
+                        required
+                        type="text" 
+                        placeholder="Name..." 
+                        className={`w-full p-4 pl-12 rounded-2xl text-sm font-semibold focus:outline-none transition-all ${state.isDarkMode ? 'bg-white/5 border border-white/10 text-white placeholder:text-white/20' : 'bg-slate-50 border border-slate-100 text-slate-800'}`}
+                        value={formData.person}
+                        onChange={(e) => setFormData({...formData, person: e.target.value})}
+                      />
+                      <User className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${state.isDarkMode ? 'text-white/20' : 'text-slate-300'}`} size={18} />
+                    </div>
+                 </div>
+                {type === TransactionType.LENT &&
+                 <div className="relative group animate-in slide-in-from-top-2 duration-200">
+                    <p className={`text-[10px] font-black uppercase tracking-widest ml-1 mb-1 transition-colors ${state.isDarkMode ? 'text-[#94a3b8]' : 'text-slate-400'}`}>Email</p>
+                    <div className="relative">
+                      <input 
+                        required
+                        type="email" 
+                        placeholder="Email..." 
+                        className={`w-full p-4 pl-12 rounded-2xl text-sm font-semibold focus:outline-none transition-all ${state.isDarkMode ? 'bg-white/5 border border-white/10 text-white placeholder:text-white/20' : 'bg-slate-50 border border-slate-100 text-slate-800'}`}
+                        value={formData.email}
+                        onChange={(e) => setFormData({...formData, email: e.target.value})}
+                      />
+                      <User className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${state.isDarkMode ? 'text-white/20' : 'text-slate-300'}`} size={18} />
+                    </div>
+                 </div>}
+                 </>
                )}
 
                <div className="grid grid-cols-2 gap-4">
