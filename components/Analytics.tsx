@@ -1,18 +1,42 @@
 
 import React, { useState, useEffect } from 'react';
 import { useFinance } from '../context/FinanceContext';
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { Sparkles, BrainCircuit, AlertCircle, ChevronRight, MoreHorizontal, X } from 'lucide-react';
 
 const Analytics: React.FC = () => {
   const { state } = useFinance();
   const [dismissed, setDismissed] = useState<string[]>([]);
 
-const now = new Date();
-const currentMonth = now.getMonth();
-const currentYear = now.getFullYear();
+   const now = new Date();
+   const currentMonth = now.getMonth();
+   const currentYear = now.getFullYear();
+   const categoryData = (() => {
+  const categoryMap: Record<string, number> = {};
 
-const overspentBudgets = state.budget
+  state.transactions
+    .filter(t =>
+      t.type === 'EXPENSE' &&
+      new Date(t.date).getMonth() === currentMonth &&
+      new Date(t.date).getFullYear() === currentYear
+    )
+    .forEach(t => {
+      if (!categoryMap[t.category]) {
+        categoryMap[t.category] = 0;
+      }
+      categoryMap[t.category] += t.amount;
+    });
+
+  return Object.entries(categoryMap).map(([category, amount]) => ({
+    name: category,
+    value: amount
+  }));
+})();
+const COLORS = state.isDarkMode
+  ? ['#a855f7', '#10b981', '#f43f5e', '#3b82f6', '#f59e0b', '#6366f1']
+  : ['#2563eb', '#10b981', '#f43f5e', '#8b5cf6', '#f59e0b', '#0ea5e9'];
+
+   const overspentBudgets = state.budget
   .map(b => {
     const spent = state.transactions
       .filter(t =>
@@ -116,44 +140,206 @@ const overspentBudgets = state.budget
          <div className="flex justify-between items-center mb-8">
             <h3 className={`text-2xl font-black transition-colors ${state.isDarkMode ? 'text-white' : 'text-slate-900'}`}>Analytics</h3>
          </div>
+            <div className="space-y-6">
+   <p className={`text-[10px] font-black uppercase tracking-widest transition-colors ${
+      state.isDarkMode ? 'text-[#94a3b8]' : 'text-slate-400'
+   }`}>
+      Budget Usage
+   </p>
 
-         <div className="mb-6">
-            <p className={`text-[10px] font-black uppercase tracking-widest mb-4 transition-colors ${state.isDarkMode ? 'text-[#94a3b8]' : 'text-slate-400'}`}>Spending Analysis</p>
-            <p className={`text-xs font-bold mb-8 flex items-center gap-2 transition-colors ${state.isDarkMode ? 'text-[#94a3b8]' : 'text-slate-500'}`}>
-               <span className={`w-2 h-2 rounded-full ${state.isDarkMode ? 'bg-[#a855f7]' : 'bg-blue-600'}`}></span> Spent 
-               <span className={`w-2 h-2 rounded-full ml-2 ${state.isDarkMode ? 'bg-white/10' : 'bg-slate-200'}`}></span> Budget
+   {state.budget.map((budget) => {
+      const spent = state.transactions
+         .filter(t =>
+         t.type === 'EXPENSE' &&
+         t.category === budget.category &&
+         new Date(t.date).getMonth() === currentMonth &&
+         new Date(t.date).getFullYear() === currentYear
+         )
+         .reduce((sum, t) => sum + t.amount, 0);
+
+      const percentage = spent / budget.limit * 100;
+      const exceeded = spent > budget.limit;
+
+      return (
+         <div key={budget.id} className="space-y-2">
+         
+         {/* Top Row */}
+         <div className="flex justify-between items-center">
+            <p className={`text-xs font-bold ${
+               state.isDarkMode ? 'text-white' : 'text-slate-800'
+            }`}>
+               {budget.category}
+            </p>
+
+            <p className={`text-xs font-bold ${
+               exceeded
+               ? 'text-rose-500'
+               : state.isDarkMode
+                  ? 'text-[#94a3b8]'
+                  : 'text-slate-500'
+            }`}>
+               ₹{spent.toLocaleString()} / ₹{budget.limit.toLocaleString()}
             </p>
          </div>
 
-         {/* <div className="h-64 -mx-4">
-            <ResponsiveContainer width="100%" height="100%">
-               <LineChart data={weeklyData}>
-                  <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 700, fill: state.isDarkMode ? '#94a3b8' : '#cbd5e1'}} dy={10} />
-                  <Tooltip 
-                    contentStyle={{ borderRadius: '20px', border: 'none', backgroundColor: state.isDarkMode ? '#1e1b39' : '#fff', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', color: state.isDarkMode ? '#fff' : '#000' }}
-                    itemStyle={{ color: state.isDarkMode ? '#a855f7' : '#2563eb' }}
-                  />
-                  <Line 
-                    type="monotone" 
-                    dataKey="spent" 
-                    stroke={state.isDarkMode ? '#a855f7' : '#2563eb'} 
-                    strokeWidth={4} 
-                    dot={{r: 4, fill: state.isDarkMode ? '#a855f7' : '#2563eb', strokeWidth: 2, stroke: '#fff'}} 
-                    activeDot={{r: 8, strokeWidth: 0}}
-                  />
-                  <Line 
-                    type="monotone" 
-                    dataKey="budget" 
-                    stroke={state.isDarkMode ? 'rgba(255,255,255,0.1)' : '#f1f5f9'} 
-                    strokeWidth={4} 
-                    strokeDasharray="8 8" 
-                    dot={false}
-                  />
-               </LineChart>
-            </ResponsiveContainer>
-         </div> */}
-      </div>
+         {/* Progress Bar */}
+         <div className={`w-full h-3 rounded-full overflow-hidden ${
+            state.isDarkMode ? 'bg-white/10' : 'bg-slate-100'
+         }`}>
+            <div
+               className={`h-full transition-all duration-700 ${
+               exceeded
+                  ? 'bg-rose-500'
+                  : state.isDarkMode
+                     ? 'bg-[#a855f7]'
+                     : 'bg-blue-600'
+               }`}
+               style={{ width: `${percentage}%` }}
+            />
+         </div>
 
+         {/* Percentage Label */}
+         <p className={`text-[10px] font-semibold ${
+            exceeded
+               ? 'text-rose-500'
+               : state.isDarkMode
+               ? 'text-[#94a3b8]'
+               : 'text-slate-500'
+         }`}>
+            {percentage.toFixed(0)}% used
+         </p>
+         </div>
+      );
+   })}
+            </div>
+   <div className="space-y-6 mt-10">
+  <div className="mt-12">
+  <p className={`text-[10px] font-black uppercase tracking-widest mb-6 ${
+    state.isDarkMode ? 'text-[#94a3b8]' : 'text-slate-400'
+  }`}>
+    Category Wise Expenditure
+  </p>
+
+  {categoryData.length === 0 ? (
+    <p className={`text-xs ${
+      state.isDarkMode ? 'text-[#94a3b8]' : 'text-slate-500'
+    }`}>
+      No expense data for this month.
+    </p>
+  ) : (
+    <div className="h-72">
+      <ResponsiveContainer width="100%" height="100%">
+        <PieChart>
+          <Pie
+            data={categoryData}
+            dataKey="value"
+            nameKey="name"
+            innerRadius={60}
+            outerRadius={100}
+            paddingAngle={4}
+          >
+            {categoryData.map((entry, index) => (
+              <Cell
+                key={`cell-${index}`}
+                fill={COLORS[index % COLORS.length]}
+              />
+            ))}
+          </Pie>
+
+          <Tooltip
+            contentStyle={{
+              borderRadius: '16px',
+              border: 'none',
+              backgroundColor: state.isDarkMode ? '#1e1b39' : '#ffffff',
+              boxShadow: '0 10px 20px rgba(0,0,0,0.1)'
+            }}
+            formatter={(value: number) =>
+              `₹${value.toLocaleString()}`
+            }
+          />
+
+          <Legend
+            verticalAlign="bottom"
+            height={36}
+            wrapperStyle={{
+              fontSize: '12px'
+            }}
+          />
+        </PieChart>
+      </ResponsiveContainer>
+    </div>
+  )}
+</div>
+
+</div>
+  <p className={`text-[10px] font-black uppercase tracking-widest ${
+    state.isDarkMode ? 'text-[#94a3b8]' : 'text-slate-400'
+  }`}>
+    Lend & Borrow Overview
+  </p>
+
+  {(() => {
+    const totalLent = state.transactions
+      .filter(t => t.type === 'LENT')
+      .reduce((sum, t) => sum + t.amount, 0);
+
+    const totalBorrowed = state.transactions
+      .filter(t => t.type === 'BORROWED')
+      .reduce((sum, t) => sum + t.amount, 0);
+
+    const net = totalLent - totalBorrowed;
+
+    return (
+      <div className="grid grid-cols-3 gap-4">
+
+        {/* Lent */}
+        <div className={`p-5 rounded-3xl border ${
+          state.isDarkMode
+            ? 'bg-emerald-500/5 border-emerald-500/20'
+            : 'bg-emerald-50 border-emerald-100'
+        }`}>
+          <p className="text-[10px] font-bold uppercase tracking-wide text-emerald-500">
+            You Lent
+          </p>
+          <p className="text-lg font-extrabold text-emerald-500 mt-2">
+            ₹{totalLent.toLocaleString()}
+          </p>
+        </div>
+
+        {/* Borrowed */}
+        <div className={`p-5 rounded-3xl border ${
+          state.isDarkMode
+            ? 'bg-rose-500/5 border-rose-500/20'
+            : 'bg-rose-50 border-rose-100'
+        }`}>
+          <p className="text-[10px] font-bold uppercase tracking-wide text-rose-500">
+            You Borrowed
+          </p>
+          <p className="text-lg font-extrabold text-rose-500 mt-2">
+            ₹{totalBorrowed.toLocaleString()}
+          </p>
+        </div>
+
+        {/* Net */}
+        <div className={`p-5 rounded-3xl border ${
+          state.isDarkMode
+            ? 'bg-blue-500/5 border-blue-500/20'
+            : 'bg-blue-50 border-blue-100'
+        }`}>
+          <p className="text-[10px] font-bold uppercase tracking-wide text-blue-500">
+            Net Position
+          </p>
+          <p className={`text-lg font-extrabold mt-2 ${
+            net >= 0 ? 'text-emerald-500' : 'text-rose-500'
+          }`}>
+            ₹{Math.abs(net).toLocaleString()}
+          </p>
+        </div>
+
+      </div>
+    );
+  })()}
+      </div>
     </div>
   );
 };

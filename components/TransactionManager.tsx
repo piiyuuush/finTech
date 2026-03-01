@@ -208,6 +208,7 @@ Thank you.`;
           filteredTransactions.map((t) => (
             <div
   key={t.id}
+  onClick={() => handleEdit(t)}
   className={`group relative p-5 rounded-3xl border transition-all duration-300 hover:-translate-y-1 ${
     state.isDarkMode
       ? 'bg-[#1e1b39]/60 border-white/5 hover:border-white/20 backdrop-blur-xl'
