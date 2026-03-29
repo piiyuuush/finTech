@@ -7,7 +7,6 @@ import { MoreHorizontal, Wallet, Edit2, Trash2, ArrowRightLeft, UserMinus, UserP
 import AccountModal from './AccountModal';
 import TransactionModal from './TransactionModal';
 import GoalModal from './GoalModal';
-import MockButton from '../context/MockData/MockButton';
 
 interface DashboardProps {
   onNavigate: (tab: string) => void;
@@ -69,8 +68,6 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
           <p className={`text-[10px] font-black uppercase tracking-[0.2em] mb-1 transition-colors ${state.isDarkMode ? 'text-[#94a3b8]' : 'text-slate-400'}`}>{t_dash.welcome}</p>
           <h2 className={`text-4xl font-black tracking-tight transition-colors ${state.isDarkMode ? 'text-white' : 'text-slate-900'}`}>{state.userName}</h2>
         </section>
-        {/* TEMPorary developers tool to seed mockup data into firebase account - IGNORE */}
-        {/* <MockButton />  */}
 
         {/* Account Cards - Horizontal Scroll */}
         <section className="relative overflow-visible">

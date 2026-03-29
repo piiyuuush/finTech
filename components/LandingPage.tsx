@@ -80,8 +80,7 @@ const LandingPage: React.FC<Props> = ({ onJoin }) => {
             {[
               { icon: <BarChart3 size={32} className="text-indigo-600" />, title: 'Smart Analytics', desc: 'Visualize your spending habits with deep-dive category breakdowns.' },
               { icon: <ShieldCheck size={32} className="text-emerald-600" />, title: 'Authentication Security', desc: 'Your data is encrypted and synced securely with Firebase cloud.' },
-              { icon: <Globe size={32} className="text-amber-600" />, title: 'Global Access', desc: 'Track in multiple currencies and languages across all your devices.' },
-              { icon: <MessageSquareText size={32} className="text-blue-600" />,title: 'Automated Bank Sync',desc: 'Securely capture banks alerts in real-time into categorized transactions.'}
+              { icon: <Globe size={32} className="text-amber-600" />, title: 'Global Accessibility', desc: 'Track in multiple currencies and languages across all your devices.' }
             ].map((feature, i) => (
               <div key={i} className="space-y-4 p-8 rounded-[40px] hover:bg-slate-50 transition-colors">
                 <div className="w-16 h-16 rounded-[24px] bg-white shadow-xl flex items-center justify-center">{feature.icon}</div>
